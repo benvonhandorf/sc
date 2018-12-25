@@ -284,7 +284,7 @@ int readAvg(adc1_channel_t channel) {
     return total / 4;
 }
 
-#define MOUSE_CENTER 1955
+#define MOUSE_CENTER 1920
 #define DEAD_ZONE_SIDE 20
 #define DEAD_ZONE_LOW (MOUSE_CENTER - DEAD_ZONE_SIDE)
 #define DEAD_ZONE_HIGH (MOUSE_CENTER + DEAD_ZONE_SIDE)
@@ -307,22 +307,29 @@ void hid_demo_task(void *pvParameters)
     int rawY = 0;
     int mouseY = 0;
 
+    int lastButtonState = 0;
+
     uint8_t buttonState = 0;
 
     while(1) {
         vTaskDelay(50 / portTICK_PERIOD_MS);
         if (sec_conn) {
             rawX = readAvg(GPIO_INPUT_X_ADC1_CHANNEL);
-            mouseX = readingToMouseDelta(rawX);
+            mouseX = -readingToMouseDelta(rawX);
 
             rawY = readAvg(GPIO_INPUT_Y_ADC1_CHANNEL);
             mouseY = -readingToMouseDelta(rawY);
 
             buttonState = (lclick_debounced << 0) | (rclick_debounced << 1);
 
-            ESP_LOGI(HID_DEMO_TAG, "x: %d\t%d\ty: %d\t%d\tbuttons: %x", rawX, mouseX, rawY, mouseY, buttonState);
+            if(mouseX != 0
+                || mouseY != 0
+                || lastButtonState != buttonState) {
+                ESP_LOGI(HID_DEMO_TAG, "x: %d\t%d\ty: %d\t%d\tbuttons: %x", rawX, mouseX, rawY, mouseY, buttonState);
 
-            esp_hidd_send_mouse_value(hid_conn_id, buttonState, mouseX, mouseY);
+                esp_hidd_send_mouse_value(hid_conn_id, buttonState, mouseX, mouseY);
+                lastButtonState = buttonState;
+            }
 
             //Toggle the output LED
             newLevel = !newLevel;
