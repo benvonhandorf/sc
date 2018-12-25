@@ -52,14 +52,11 @@
 #define GPIO_OUTPUT_PIN_BITMASK  ((1<<GPIO_OUTPUT_DBG))
 //ADC1 CHANNEL 0
 #define GPIO_INPUT_X_ANALOG 32
-#define GPIO_INPUT_X_ANALOG_MASK GPIO_SEL_32
 #define GPIO_INPUT_X_ADC1_CHANNEL ADC1_GPIO32_CHANNEL
 //ADC2 CHANNEL 2
-#define GPIO_INPUT_Y_ANALOG  4
-#define GPIO_INPUT_Y_ANALOG_MASK GPIO_SEL_4
-#define GPIO_INPUT_Y_ADC2_CHANNEL ADC2_GPIO4_CHANNEL
+#define GPIO_INPUT_Y_ANALOG  33
+#define GPIO_INPUT_Y_ADC1_CHANNEL ADC1_GPIO33_CHANNEL
 
-#define GPIO_INPUT_ADC_BITMASK  (GPIO_INPUT_X_ANALOG_MASK|GPIO_INPUT_Y_ANALOG_MASK)
 //Button GPIOs
 #define GPIO_INPUT_SWITCH_LCLICK    16
 #define GPIO_INPUT_SWITCH_RCLICK    17
@@ -179,9 +176,7 @@ static void gpio_mouse_init(void)
 
     adc1_config_width(ADC_WIDTH_BIT_12);
     adc1_config_channel_atten(GPIO_INPUT_X_ADC1_CHANNEL, ADC_ATTEN_DB_11);
-
-    //ADC2 width is configured at read time
-    adc2_config_channel_atten(GPIO_INPUT_Y_ADC2_CHANNEL, ADC_ATTEN_DB_11);
+    adc1_config_channel_atten(GPIO_INPUT_Y_ADC1_CHANNEL, ADC_ATTEN_DB_11);
 }
 
 
@@ -254,27 +249,52 @@ static void gap_event_handler(esp_gap_ble_cb_event_t event, esp_ble_gap_cb_param
     }
 }
 
+int readAvg(adc1_channel_t channel) {
+    int total = 0;
+    
+    total += adc1_get_raw(channel);
+    total += adc1_get_raw(channel);
+    total += adc1_get_raw(channel);
+    total += adc1_get_raw(channel);
+
+    return total / 4;
+}
+
+#define MOUSE_CENTER 1955
+#define DEAD_ZONE_SIDE 20
+#define DEAD_ZONE_LOW (MOUSE_CENTER - DEAD_ZONE_SIDE)
+#define DEAD_ZONE_HIGH (MOUSE_CENTER + DEAD_ZONE_SIDE)
+#define MOUSE_SCALE 16
+
+int readingToMouseDelta(int value) {
+    if(value > DEAD_ZONE_LOW
+        && value < DEAD_ZONE_HIGH) {
+        return 0;
+    }
+
+    return ( value - MOUSE_CENTER ) / MOUSE_SCALE;
+}
+
 void hid_demo_task(void *pvParameters)
 {
     uint32_t newLevel = 0;
     int rawX = 0;
+    int mouseX = 0;
     int rawY = 0;
-    int result = 0;
+    int mouseY = 0;
 
     while(1) {
-        vTaskDelay(100 / portTICK_PERIOD_MS);
+        vTaskDelay(50 / portTICK_PERIOD_MS);
         if (sec_conn) {
-            rawX = adc1_get_raw(GPIO_INPUT_X_ADC1_CHANNEL);
+            rawX = readAvg(GPIO_INPUT_X_ADC1_CHANNEL);
+            mouseX = readingToMouseDelta(rawX);
 
-            result = adc2_get_raw(GPIO_INPUT_Y_ADC2_CHANNEL, ADC_WIDTH_BIT_12, &rawY);
+            rawY = readAvg(GPIO_INPUT_Y_ADC1_CHANNEL);
+            mouseY = -readingToMouseDelta(rawY);
 
-            if(result != ESP_OK) {
-                ESP_LOGE(HID_DEMO_TAG, "Error reading adc2: %d", result);
-            }
+            ESP_LOGI(HID_DEMO_TAG, "x: %d\t%d\ty: %d\t%d", rawX, mouseX, rawY, mouseY);
 
-            ESP_LOGI(HID_DEMO_TAG, "x: %d\ty: %d", rawX, rawY);
-
-//            esp_hidd_send_mouse_value(hid_conn_id, 0, 50, 0);
+            esp_hidd_send_mouse_value(hid_conn_id, 0, mouseX, mouseY);
 
             //Toggle the output LED
             newLevel = !newLevel;
