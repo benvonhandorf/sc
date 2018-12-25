@@ -112,14 +112,38 @@ void IRAM_ATTR gpio_switch_isr_handler(void* arg)
     xQueueSendFromISR(gpio_evt_queue, &gpio_num, NULL);
 }
 
+uint8_t lclick_debounced = 0;
+int64_t lclick_time_changed = 0;
+uint8_t rclick_debounced = 0;
+int64_t rclick_time_changed = 0;
+
+#define DEBOUNCE_LOCKOUT_US 100
+
 void gpio_switch_task(void* arg)
 {
     static uint8_t i = 0;
     uint32_t io_num;
     uint32_t io_level;
+    int64_t time ;
     for(;;) {
         if(xQueueReceive(gpio_evt_queue, &io_num, portMAX_DELAY)) {
             io_level = gpio_get_level(io_num);
+            time = esp_timer_get_time();
+
+            switch(io_num) {
+                case GPIO_INPUT_SWITCH_LCLICK:
+                    if((time - lclick_time_changed) > DEBOUNCE_LOCKOUT_US) {
+                        lclick_debounced = io_level;
+                        lclick_time_changed = time;
+                    }
+                    break;
+                case GPIO_INPUT_SWITCH_RCLICK:
+                    if((time - rclick_time_changed) > DEBOUNCE_LOCKOUT_US) {
+                        rclick_debounced = io_level;
+                        rclick_time_changed = time;
+                    }
+                    break;
+            }
 
             ESP_LOGI(HID_DEMO_TAG, "GPIO[%d] intr, val: %d", io_num, gpio_get_level(io_num));
 
@@ -251,7 +275,7 @@ static void gap_event_handler(esp_gap_ble_cb_event_t event, esp_ble_gap_cb_param
 
 int readAvg(adc1_channel_t channel) {
     int total = 0;
-    
+
     total += adc1_get_raw(channel);
     total += adc1_get_raw(channel);
     total += adc1_get_raw(channel);
@@ -283,6 +307,8 @@ void hid_demo_task(void *pvParameters)
     int rawY = 0;
     int mouseY = 0;
 
+    uint8_t buttonState = 0;
+
     while(1) {
         vTaskDelay(50 / portTICK_PERIOD_MS);
         if (sec_conn) {
@@ -292,9 +318,11 @@ void hid_demo_task(void *pvParameters)
             rawY = readAvg(GPIO_INPUT_Y_ADC1_CHANNEL);
             mouseY = -readingToMouseDelta(rawY);
 
-            ESP_LOGI(HID_DEMO_TAG, "x: %d\t%d\ty: %d\t%d", rawX, mouseX, rawY, mouseY);
+            buttonState = (lclick_debounced << 0) | (rclick_debounced << 1);
 
-            esp_hidd_send_mouse_value(hid_conn_id, 0, mouseX, mouseY);
+            ESP_LOGI(HID_DEMO_TAG, "x: %d\t%d\ty: %d\t%d\tbuttons: %x", rawX, mouseX, rawY, mouseY, buttonState);
+
+            esp_hidd_send_mouse_value(hid_conn_id, buttonState, mouseX, mouseY);
 
             //Toggle the output LED
             newLevel = !newLevel;
