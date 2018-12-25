@@ -26,6 +26,7 @@
 #include "esp_bt_device.h"
 #include "driver/gpio.h"
 #include "hid_dev.h"
+#include "driver/adc.h"
 
 /**
  * Brief:
@@ -47,23 +48,34 @@
 #define HID_DEMO_TAG "HID_DEMO"
 
 
-#define GPIO_OUTPUT_IO_0    18
-#define GPIO_OUTPUT_IO_1    19
-#define GPIO_OUTPUT_PIN_SEL  ((1<<GPIO_OUTPUT_IO_0) | (1<<GPIO_OUTPUT_IO_1))
-#define GPIO_INPUT_IO_0     21
-#define GPIO_INPUT_IO_1     27
-#define GPIO_INPUT_PIN_SEL  ((1<<GPIO_INPUT_IO_0) | (1<<GPIO_INPUT_IO_1))
+#define GPIO_OUTPUT_DBG     23
+#define GPIO_OUTPUT_PIN_BITMASK  ((1<<GPIO_OUTPUT_DBG))
+//ADC1 CHANNEL 0
+#define GPIO_INPUT_X_ANALOG 32
+#define GPIO_INPUT_X_ANALOG_MASK GPIO_SEL_32
+#define GPIO_INPUT_X_ADC1_CHANNEL ADC1_GPIO32_CHANNEL
+//ADC2 CHANNEL 2
+#define GPIO_INPUT_Y_ANALOG  4
+#define GPIO_INPUT_Y_ANALOG_MASK GPIO_SEL_4
+#define GPIO_INPUT_Y_ADC2_CHANNEL ADC2_GPIO4_CHANNEL
+
+#define GPIO_INPUT_ADC_BITMASK  (GPIO_INPUT_X_ANALOG_MASK|GPIO_INPUT_Y_ANALOG_MASK)
+//Button GPIOs
+#define GPIO_INPUT_SWITCH_LCLICK    16
+#define GPIO_INPUT_SWITCH_RCLICK    17
+
+#define GPIO_INPUT_INT_BITMASK  ((1<<GPIO_INPUT_SWITCH_LCLICK)|(1<<GPIO_INPUT_SWITCH_RCLICK))
 #define ESP_INTR_FLAG_DEFAULT 0
 
 static xQueueHandle gpio_evt_queue = NULL;
 static uint16_t hid_conn_id = 0;
 static bool sec_conn = false;
-static bool send_volum_up = false;
+
 #define CHAR_DECLARATION_SIZE   (sizeof(uint8_t))
 
 static void hidd_event_callback(esp_hidd_cb_event_t event, esp_hidd_cb_param_t *param);
 
-#define HIDD_DEVICE_NAME            "HID"
+#define HIDD_DEVICE_NAME            "SCR-X1"
 static uint8_t hidd_service_uuid128[] = {
     /* LSB <--------------------------------------------------------------------------------> MSB */
     //first uuid, 16bit, [12],[13] is the value
@@ -97,27 +109,33 @@ static esp_ble_adv_params_t hidd_adv_params = {
     .adv_filter_policy = ADV_FILTER_ALLOW_SCAN_ANY_CON_ANY,
 };
 
-void IRAM_ATTR gpio_isr_handler(void* arg)
+void IRAM_ATTR gpio_switch_isr_handler(void* arg)
 {
     uint32_t gpio_num = (uint32_t) arg;
     xQueueSendFromISR(gpio_evt_queue, &gpio_num, NULL);
 }
 
-void gpio_task_example(void* arg)
+void gpio_switch_task(void* arg)
 {
     static uint8_t i = 0;
     uint32_t io_num;
+    uint32_t io_level;
     for(;;) {
         if(xQueueReceive(gpio_evt_queue, &io_num, portMAX_DELAY)) {
-            ESP_LOGI(HID_DEMO_TAG, "GPIO[%d] intr, val: %d\n", io_num, gpio_get_level(io_num));
+            io_level = gpio_get_level(io_num);
+
+            ESP_LOGI(HID_DEMO_TAG, "GPIO[%d] intr, val: %d", io_num, gpio_get_level(io_num));
+
+            gpio_set_level(GPIO_OUTPUT_DBG, io_level);
+
             if(i == 0) {
-            ++i;
+                ++i;
             }
         }
     }
 }
 
-static void gpio_demo_init(void)
+static void gpio_mouse_init(void)
 {
     gpio_config_t io_conf;
     //disable interrupt
@@ -125,7 +143,7 @@ static void gpio_demo_init(void)
     //set as output mode        
     io_conf.mode = GPIO_MODE_OUTPUT;
     //bit mask of the pins that you want to set,e.g.GPIO18/19
-    io_conf.pin_bit_mask = GPIO_OUTPUT_PIN_SEL;
+    io_conf.pin_bit_mask = GPIO_OUTPUT_PIN_BITMASK;
     //disable pull-down mode
     io_conf.pull_down_en = 0;
     //disable pull-up mode
@@ -133,36 +151,37 @@ static void gpio_demo_init(void)
     //configure GPIO with the given settings
     gpio_config(&io_conf);
 
-    //interrupt of rising edge
-    io_conf.intr_type = GPIO_PIN_INTR_POSEDGE;
-    //bit mask of the pins, use GPIO4/5 here
-    io_conf.pin_bit_mask = GPIO_INPUT_PIN_SEL;
-    //set as input mode    
-    io_conf.mode = GPIO_MODE_INPUT;
-    //enable pull-up mode
-    io_conf.pull_up_en = 1;
-    gpio_config(&io_conf);
 
-    //change gpio intrrupt type for one pin
-    gpio_set_intr_type(GPIO_INPUT_IO_0, GPIO_INTR_ANYEDGE);
+    //Configure analog pins
+    // io_conf.intr_type = GPIO_PIN_INTR_DISABLE;
+    // io_conf.pin_bit_mask = GPIO_INPUT_ADC_BITMASK;
+    // io_conf.mode = GPIO_MODE_INPUT;
+    // io_conf.pull_up_en = GPIO_PULLUP_DISABLE;
+    // gpio_config(&io_conf);
+    
+    //switch pins
+    io_conf.intr_type = GPIO_INTR_ANYEDGE;
+    io_conf.pin_bit_mask = GPIO_INPUT_INT_BITMASK;
+    io_conf.mode = GPIO_MODE_INPUT;
+    io_conf.pull_up_en = GPIO_PULLUP_ENABLE;
+    gpio_config(&io_conf);
 
     //create a queue to handle gpio event from isr
     gpio_evt_queue = xQueueCreate(10, sizeof(uint32_t));
     //start gpio task
-    xTaskCreate(gpio_task_example, "gpio_task_example", 2048, NULL, 10, NULL);
+    xTaskCreate(gpio_switch_task, "gpio_switch_task", 2048, NULL, 10, NULL);
 
-    //install gpio isr service
+    //install gpio isr service to allow per-pin GPIO interrupts
     gpio_install_isr_service(ESP_INTR_FLAG_DEFAULT);
     //hook isr handler for specific gpio pin
-    gpio_isr_handler_add(GPIO_INPUT_IO_0, gpio_isr_handler, (void*) GPIO_INPUT_IO_0);
-    //hook isr handler for specific gpio pin
-    gpio_isr_handler_add(GPIO_INPUT_IO_1, gpio_isr_handler, (void*) GPIO_INPUT_IO_1);
+    gpio_isr_handler_add(GPIO_INPUT_SWITCH_LCLICK, gpio_switch_isr_handler, (void*) GPIO_INPUT_SWITCH_LCLICK);
+    gpio_isr_handler_add(GPIO_INPUT_SWITCH_RCLICK, gpio_switch_isr_handler, (void*) GPIO_INPUT_SWITCH_RCLICK);
 
-    //remove isr handler for gpio number.
-    gpio_isr_handler_remove(GPIO_INPUT_IO_0);
-    //hook isr handler for specific gpio pin again
-    gpio_isr_handler_add(GPIO_INPUT_IO_0, gpio_isr_handler, (void*) GPIO_INPUT_IO_0);
+    adc1_config_width(ADC_WIDTH_BIT_12);
+    adc1_config_channel_atten(GPIO_INPUT_X_ADC1_CHANNEL, ADC_ATTEN_DB_11);
 
+    //ADC2 width is configured at read time
+    adc2_config_channel_atten(GPIO_INPUT_Y_ADC2_CHANNEL, ADC_ATTEN_DB_11);
 }
 
 
@@ -183,8 +202,8 @@ static void hidd_event_callback(esp_hidd_cb_event_t event, esp_hidd_cb_param_t *
             break;
         }
         case ESP_HIDD_EVENT_DEINIT_FINISH:
-	     break;
-		case ESP_HIDD_EVENT_BLE_CONNECT: {
+        break;
+        case ESP_HIDD_EVENT_BLE_CONNECT: {
             ESP_LOGI(HID_DEMO_TAG, "ESP_HIDD_EVENT_BLE_CONNECT");
             hid_conn_id = param->connect.conn_id;
             break;
@@ -200,7 +219,7 @@ static void hidd_event_callback(esp_hidd_cb_event_t event, esp_hidd_cb_param_t *
             ESP_LOG_BUFFER_HEX(HID_DEMO_TAG, param->vendor_write.data, param->vendor_write.length);
         }    
         default:
-            break;
+        break;
     }
     return;
 }
@@ -208,52 +227,59 @@ static void hidd_event_callback(esp_hidd_cb_event_t event, esp_hidd_cb_param_t *
 static void gap_event_handler(esp_gap_ble_cb_event_t event, esp_ble_gap_cb_param_t *param)
 {
     switch (event) {
-    case ESP_GAP_BLE_ADV_DATA_SET_COMPLETE_EVT:
-        esp_ble_gap_start_advertising(&hidd_adv_params);
-        break;
-     case ESP_GAP_BLE_SEC_REQ_EVT:
-        for(int i = 0; i < ESP_BD_ADDR_LEN; i++) {
-             ESP_LOGD(HID_DEMO_TAG, "%x:",param->ble_security.ble_req.bd_addr[i]);
-        }
-        esp_ble_gap_security_rsp(param->ble_security.ble_req.bd_addr, true);
-	 break;
-     case ESP_GAP_BLE_AUTH_CMPL_EVT:
-        sec_conn = true;
-        esp_bd_addr_t bd_addr;
-        memcpy(bd_addr, param->ble_security.auth_cmpl.bd_addr, sizeof(esp_bd_addr_t));
-        ESP_LOGI(HID_DEMO_TAG, "remote BD_ADDR: %08x%04x",\
-                (bd_addr[0] << 24) + (bd_addr[1] << 16) + (bd_addr[2] << 8) + bd_addr[3],
-                (bd_addr[4] << 8) + bd_addr[5]);
-        ESP_LOGI(HID_DEMO_TAG, "address type = %d", param->ble_security.auth_cmpl.addr_type);
-        ESP_LOGI(HID_DEMO_TAG, "pair status = %s",param->ble_security.auth_cmpl.success ? "success" : "fail");
-        if(!param->ble_security.auth_cmpl.success) {
-            ESP_LOGE(HID_DEMO_TAG, "fail reason = 0x%x",param->ble_security.auth_cmpl.fail_reason);
-        }
-        break;
-    default:
-        break;
+        case ESP_GAP_BLE_ADV_DATA_SET_COMPLETE_EVT:
+            esp_ble_gap_start_advertising(&hidd_adv_params);
+            break;
+        case ESP_GAP_BLE_SEC_REQ_EVT:
+            for(int i = 0; i < ESP_BD_ADDR_LEN; i++) {
+                ESP_LOGD(HID_DEMO_TAG, "%x:",param->ble_security.ble_req.bd_addr[i]);
+            }
+            esp_ble_gap_security_rsp(param->ble_security.ble_req.bd_addr, true);
+            break;
+        case ESP_GAP_BLE_AUTH_CMPL_EVT:
+            sec_conn = true;
+            esp_bd_addr_t bd_addr;
+            memcpy(bd_addr, param->ble_security.auth_cmpl.bd_addr, sizeof(esp_bd_addr_t));
+            ESP_LOGI(HID_DEMO_TAG, "remote BD_ADDR: %08x%04x",\
+               (bd_addr[0] << 24) + (bd_addr[1] << 16) + (bd_addr[2] << 8) + bd_addr[3],
+               (bd_addr[4] << 8) + bd_addr[5]);
+            ESP_LOGI(HID_DEMO_TAG, "address type = %d", param->ble_security.auth_cmpl.addr_type);
+            ESP_LOGI(HID_DEMO_TAG, "pair status = %s",param->ble_security.auth_cmpl.success ? "success" : "fail");
+            if(!param->ble_security.auth_cmpl.success) {
+                ESP_LOGE(HID_DEMO_TAG, "fail reason = 0x%x",param->ble_security.auth_cmpl.fail_reason);
+            }
+            break;
+        default:
+            break;
     }
 }
 
 void hid_demo_task(void *pvParameters)
 {
-    vTaskDelay(1000 / portTICK_PERIOD_MS);
+    uint32_t newLevel = 0;
+    int rawX = 0;
+    int rawY = 0;
+    int result = 0;
+
     while(1) {
-        vTaskDelay(2000 / portTICK_PERIOD_MS);
+        vTaskDelay(100 / portTICK_PERIOD_MS);
         if (sec_conn) {
-            ESP_LOGI(HID_DEMO_TAG, "Send the volume");
-            send_volum_up = true;
-            //uint8_t key_vaule = {HID_KEY_A};
-            //esp_hidd_send_keyboard_value(hid_conn_id, 0, &key_vaule, 1);
-            esp_hidd_send_consumer_value(hid_conn_id, HID_CONSUMER_VOLUME_UP, true);
-            vTaskDelay(3000 / portTICK_PERIOD_MS);
-            if (send_volum_up) {
-                send_volum_up = false;
-                esp_hidd_send_consumer_value(hid_conn_id, HID_CONSUMER_VOLUME_UP, false);
-                esp_hidd_send_consumer_value(hid_conn_id, HID_CONSUMER_VOLUME_DOWN, true);
-                vTaskDelay(3000 / portTICK_PERIOD_MS);
-                esp_hidd_send_consumer_value(hid_conn_id, HID_CONSUMER_VOLUME_DOWN, false);
+            rawX = adc1_get_raw(GPIO_INPUT_X_ADC1_CHANNEL);
+
+            result = adc2_get_raw(GPIO_INPUT_Y_ADC2_CHANNEL, ADC_WIDTH_BIT_12, &rawY);
+
+            if(result != ESP_OK) {
+                ESP_LOGE(HID_DEMO_TAG, "Error reading adc2: %d", result);
             }
+
+            ESP_LOGI(HID_DEMO_TAG, "x: %d\ty: %d", rawX, rawY);
+
+//            esp_hidd_send_mouse_value(hid_conn_id, 0, 50, 0);
+
+            //Toggle the output LED
+            newLevel = !newLevel;
+
+            gpio_set_level(GPIO_OUTPUT_DBG, newLevel);
         }
     }
 }
@@ -322,9 +348,9 @@ void app_main()
     esp_ble_gap_set_security_param(ESP_BLE_SM_SET_INIT_KEY, &init_key, sizeof(uint8_t));
     esp_ble_gap_set_security_param(ESP_BLE_SM_SET_RSP_KEY, &rsp_key, sizeof(uint8_t));
 
-    //init the gpio pin
-    gpio_demo_init();
-   xTaskCreate(&hid_demo_task, "hid_task", 2048, NULL, 5, NULL);
+    //init the gpio pins and handler
+    gpio_mouse_init();
 
+    xTaskCreate(&hid_demo_task, "hid_task", 2048, NULL, 5, NULL);
 }
 
