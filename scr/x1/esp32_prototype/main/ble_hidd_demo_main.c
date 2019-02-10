@@ -209,6 +209,7 @@ static void hidd_event_callback(esp_hidd_cb_event_t event, esp_hidd_cb_param_t *
 {
     switch(event) {
         case ESP_HIDD_EVENT_REG_FINISH: {
+            ESP_LOGI(HID_DEMO_TAG, "ESP_HIDD_EVENT_REG_FINISH");
             if (param->init_finish.state == ESP_HIDD_INIT_OK) {
                 //esp_bd_addr_t rand_addr = {0x04,0x11,0x11,0x11,0x11,0x05};
                 esp_ble_gap_set_device_name(HIDD_DEVICE_NAME);
@@ -221,6 +222,7 @@ static void hidd_event_callback(esp_hidd_cb_event_t event, esp_hidd_cb_param_t *
             break;
         }
         case ESP_HIDD_EVENT_DEINIT_FINISH:
+            ESP_LOGI(HID_DEMO_TAG, "ESP_HIDD_EVENT_DEINIT_FINISH");
         break;
         case ESP_HIDD_EVENT_BLE_CONNECT: {
             ESP_LOGI(HID_DEMO_TAG, "ESP_HIDD_EVENT_BLE_CONNECT");
@@ -247,9 +249,11 @@ static void gap_event_handler(esp_gap_ble_cb_event_t event, esp_ble_gap_cb_param
 {
     switch (event) {
         case ESP_GAP_BLE_ADV_DATA_SET_COMPLETE_EVT:
+            ESP_LOGI(HID_DEMO_TAG, "ESP_GAP_BLE_ADV_DATA_SET_COMPLETE_EVT");
             esp_ble_gap_start_advertising(&hidd_adv_params);
             break;
         case ESP_GAP_BLE_SEC_REQ_EVT:
+            ESP_LOGI(HID_DEMO_TAG, "ESP_GAP_BLE_SEC_REQ_EVT");
             for(int i = 0; i < ESP_BD_ADDR_LEN; i++) {
                 ESP_LOGD(HID_DEMO_TAG, "%x:",param->ble_security.ble_req.bd_addr[i]);
             }
@@ -289,6 +293,7 @@ int readAvg(adc1_channel_t channel) {
 #define DEAD_ZONE_LOW (MOUSE_CENTER - DEAD_ZONE_SIDE)
 #define DEAD_ZONE_HIGH (MOUSE_CENTER + DEAD_ZONE_SIDE)
 #define MOUSE_SCALE 16
+#define MOUSE_MAX 127
 
 int readingToMouseDelta(int value) {
     if(value > DEAD_ZONE_LOW
@@ -296,7 +301,13 @@ int readingToMouseDelta(int value) {
         return 0;
     }
 
-    return ( value - MOUSE_CENTER ) / MOUSE_SCALE;
+    value = ( value - MOUSE_CENTER ) / MOUSE_SCALE;
+
+    if( value > MOUSE_MAX) {
+        value = MOUSE_MAX;
+    }
+
+    return value;
 }
 
 void hid_demo_task(void *pvParameters)
@@ -390,16 +401,17 @@ void app_main()
     /* set the security iocap & auth_req & key size & init key response key parameters to the stack*/
     esp_ble_auth_req_t auth_req = ESP_LE_AUTH_BOND;     //bonding with peer device after authentication
     esp_ble_io_cap_t iocap = ESP_IO_CAP_NONE;           //set the IO capability to No output No input
+    esp_ble_gap_set_security_param(ESP_BLE_SM_IOCAP_MODE, &iocap, sizeof(uint8_t));
+
     uint8_t key_size = 16;      //the key size should be 7~16 bytes
     uint8_t init_key = ESP_BLE_ENC_KEY_MASK | ESP_BLE_ID_KEY_MASK;
     uint8_t rsp_key = ESP_BLE_ENC_KEY_MASK | ESP_BLE_ID_KEY_MASK;
     esp_ble_gap_set_security_param(ESP_BLE_SM_AUTHEN_REQ_MODE, &auth_req, sizeof(uint8_t));
-    esp_ble_gap_set_security_param(ESP_BLE_SM_IOCAP_MODE, &iocap, sizeof(uint8_t));
     esp_ble_gap_set_security_param(ESP_BLE_SM_MAX_KEY_SIZE, &key_size, sizeof(uint8_t));
-    /* If your BLE device act as a Slave, the init_key means you hope which types of key of the master should distribut to you,
+/*      If your BLE device act as a Slave, the init_key means you hope which types of key of the master should distribut to you,
     and the response key means which key you can distribut to the Master;
     If your BLE device act as a master, the response key means you hope which types of key of the slave should distribut to you, 
-    and the init key means which key you can distribut to the slave. */
+    and the init key means which key you can distribut to the slave. */    
     esp_ble_gap_set_security_param(ESP_BLE_SM_SET_INIT_KEY, &init_key, sizeof(uint8_t));
     esp_ble_gap_set_security_param(ESP_BLE_SM_SET_RSP_KEY, &rsp_key, sizeof(uint8_t));
 
