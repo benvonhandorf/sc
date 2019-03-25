@@ -83,7 +83,7 @@ void startAdv(void)
 #define MOUSE_Y_PIN A1
 
 #define MOUSE_CENTER 465
-#define DEAD_ZONE_SIDE 20
+#define DEAD_ZONE_SIDE 15
 #define DEAD_ZONE_LOW (MOUSE_CENTER - DEAD_ZONE_SIDE)
 #define DEAD_ZONE_HIGH (MOUSE_CENTER + DEAD_ZONE_SIDE)
 #define MOUSE_SCALE 16
@@ -117,11 +117,10 @@ void updateMousePosition() {
   mouseY = -readingToMouseDelta(rawY);
   
 
-//  Serial.print("ADC: ");
-//  Serial.print(rawX);
-//  Serial.print(" : ");
-//  Serial.print(rawY);
-//  Serial.println();
+  Serial.print(rawX);
+  Serial.print(", ");
+  Serial.print(rawY);
+  Serial.println();
 }
 
 #define DEBOUNCE_LOCKOUT_MS 10
@@ -166,13 +165,13 @@ void sendUpdate() {
   uint8_t buttons = lclick_debounced ? MOUSE_BUTTON_LEFT : 0
                 || rclick_debounced ? MOUSE_BUTTON_RIGHT : 0;
 
-  Serial.print("RPT: ");
-  Serial.print(buttons, HEX);
-  Serial.print(" : ");
-  Serial.print(mouseX);
-  Serial.print(" : ");
-  Serial.print(mouseY);
-  Serial.println();
+//  Serial.print("RPT: ");
+//  Serial.print(buttons, HEX);
+//  Serial.print(" : ");
+//  Serial.print(mouseX);
+//  Serial.print(" : ");
+//  Serial.print(mouseY);
+//  Serial.println();
 
   if(buttons != previousButtons
     || mouseX != 0
