@@ -14,7 +14,7 @@
 #include <bluefruit.h>
 #include <Adafruit_NeoPixel.h>
 
-Adafruit_NeoPixel neopixel = Adafruit_NeoPixel(PIN_NEOPIXEL, 1, NEO_GRB + NEO_KHZ800);
+Adafruit_NeoPixel neopixel = Adafruit_NeoPixel();
 
 BLEDis bledis;
 BLEHidAdafruit blehid;
@@ -22,8 +22,8 @@ BLEHidAdafruit blehid;
 #define MOUSE_X_PIN A1
 #define MOUSE_Y_PIN A0
 
-#define LCLICK_PIN 12
-#define RCLICK_PIN 11
+#define LCLICK_PIN 11
+#define RCLICK_PIN 12
 
 typedef struct {
   int pin;
@@ -51,13 +51,24 @@ Axis yAxis;
 void setup()
 {
   Serial.begin(115200);
-  while ( !Serial ) delay(10);   // for nrf52840 with native usb
+  for(int i=100; i > 0; i--) {
+    if( Serial ) {
+      break;
+    } else {
+      delay(10);   // for nrf52840 with native usb
+    }
+  }
 
   Serial.println("Preparing Neopixel");
 
+  neopixel.updateLength(1);
+  neopixel.setPin(PIN_NEOPIXEL);
+  neopixel.updateType(NEO_KHZ800 | NEO_GRB);
+  
   neopixel.begin();
 
-  neopixel.setPixelColor(0, 255, 0, 0);
+  neopixel.setBrightness(16);
+  neopixel.setPixelColor(0, 0, 0, 255);
   neopixel.show();
 
   Serial.println("Preparing Bluetooth");
@@ -85,7 +96,7 @@ void setup()
   pinMode(LCLICK_PIN, INPUT_PULLUP);
   pinMode(RCLICK_PIN, INPUT_PULLUP);
 
-    leftButton.pin = LCLICK_PIN;
+  leftButton.pin = LCLICK_PIN;
   rightButton.pin = RCLICK_PIN;
 
   xAxis.pin = MOUSE_X_PIN;
@@ -180,17 +191,12 @@ void updateButtonState(unsigned long now, ButtonState* buttonState) {
 
         Serial.print(buttonState->pin);
         Serial.println(" latch cleared");
-
-        neopixel.setPixelColor(0, 0, 0, 0);
-        neopixel.show();
       }
     } 
 
     if(buttonState->latch == 1) {
       //latched.  Current state is immaterial until latch is cleared
         buttonState->state = 1;
-        neopixel.setPixelColor(0, 0, 255, 0);
-        neopixel.show();
     } else if (state != buttonState->state) {
       if (state == 0 && now > buttonState->update + BUTTON_LATCH_MS) {
         //We were 1 long enough to latch the input
@@ -231,6 +237,9 @@ void sendUpdate() {
       || yAxis.value != 0) {
     blehid.mouseReport(buttons, xAxis.value, yAxis.value);
     previousButtons = buttons;
+
+    neopixel.setPixelColor(0, leftButton.state ? 100 : 0, rightButton.state ? 100 : 0, 0);
+    neopixel.show();
   }
 }
 
