@@ -1,3 +1,2 @@
 (sym_lib_table
-  (lib (name nrf52-modules)(type Legacy)(uri /home/benvh/projects/kicad-library/nrf52-modules.lib)(options "")(descr ""))
 )

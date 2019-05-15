@@ -92,16 +92,14 @@ $EndComp
 $Comp
 L power:+3.3V #PWR036
 U 1 1 5CB6A281
-P 9400 1000
-F 0 "#PWR036" H 9400 850 50  0001 C CNN
-F 1 "+3.3V" H 9415 1173 50  0000 C CNN
-F 2 "" H 9400 1000 50  0001 C CNN
-F 3 "" H 9400 1000 50  0001 C CNN
-	1    9400 1000
+P 8450 1000
+F 0 "#PWR036" H 8450 850 50  0001 C CNN
+F 1 "+3.3V" H 8465 1173 50  0000 C CNN
+F 2 "" H 8450 1000 50  0001 C CNN
+F 3 "" H 8450 1000 50  0001 C CNN
+	1    8450 1000
 	1    0    0    -1  
 $EndComp
-Wire Wire Line
-	9400 1000 9150 1000
 Text Notes 8150 1700 0    50   ~ 10
 Check this wiring.  Guessing from Adafruit
 NoConn ~ 1900 2000
@@ -276,9 +274,9 @@ F 3 "" H 2800 4100 50  0001 C CNN
 	1    2800 4100
 	1    0    0    -1  
 $EndComp
-Text GLabel 8650 1000 0    50   Input ~ 10
+Text GLabel 9150 1000 2    50   Input ~ 10
 SWDIO
-Text GLabel 8650 1100 0    50   Input ~ 10
+Text GLabel 9150 1100 2    50   Input ~ 10
 SWCLK
 Text GLabel 5000 2300 0    50   Input ~ 10
 SWDIO
@@ -286,29 +284,19 @@ Text GLabel 5000 2400 0    50   Input ~ 10
 SWCLK
 Text GLabel 5000 2800 0    50   Input ~ 10
 RESET
-Text GLabel 8650 1400 0    50   Input ~ 10
+Text GLabel 9150 1400 2    50   Input ~ 10
 RESET
 $Comp
 L power:GND #PWR037
 U 1 1 5CB6B4D9
-P 9400 1300
-F 0 "#PWR037" H 9400 1050 50  0001 C CNN
-F 1 "GND" H 9405 1127 50  0000 C CNN
-F 2 "" H 9400 1300 50  0001 C CNN
-F 3 "" H 9400 1300 50  0001 C CNN
-	1    9400 1300
+P 8450 1300
+F 0 "#PWR037" H 8450 1050 50  0001 C CNN
+F 1 "GND" H 8455 1127 50  0000 C CNN
+F 2 "" H 8450 1300 50  0001 C CNN
+F 3 "" H 8450 1300 50  0001 C CNN
+	1    8450 1300
 	1    0    0    -1  
 $EndComp
-Wire Wire Line
-	9400 1300 9150 1300
-Wire Wire Line
-	9150 1300 9150 1200
-Connection ~ 9150 1300
-Wire Wire Line
-	9150 1300 9150 1400
-Wire Wire Line
-	9150 1200 9150 1100
-Connection ~ 9150 1200
 Text GLabel 9100 2350 0    50   Input ~ 0
 Y
 Text GLabel 9100 2450 0    50   Input ~ 0
@@ -576,8 +564,6 @@ P1_11
 Text GLabel 9050 3000 0    50   Input ~ 0
 P1_11
 NoConn ~ 1500 2200
-NoConn ~ 8650 1300
-NoConn ~ 8650 1200
 NoConn ~ 5550 1100
 NoConn ~ 6500 1750
 Text GLabel 5050 5200 2    50   Input ~ 0
@@ -649,4 +635,23 @@ F 3 "" H 2300 5200 50  0001 C CNN
 	1    2300 5200
 	1    0    0    -1  
 $EndComp
+Wire Wire Line
+	8450 1000 8650 1000
+Wire Wire Line
+	8650 1100 8650 1200
+Wire Wire Line
+	8650 1200 8450 1200
+Wire Wire Line
+	8450 1200 8450 1300
+Connection ~ 8650 1200
+Wire Wire Line
+	8650 1400 8550 1400
+Wire Wire Line
+	8550 1400 8550 1300
+Wire Wire Line
+	8550 1300 8450 1300
+Connection ~ 8450 1300
+NoConn ~ 9150 1300
+NoConn ~ 8650 1300
+NoConn ~ 9150 1200
 $EndSCHEMATC
