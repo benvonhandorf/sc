@@ -12,9 +12,6 @@
   any redistribution
 *********************************************************************/
 #include <bluefruit.h>
-#include <Adafruit_NeoPixel.h>
-
-Adafruit_NeoPixel neopixel = Adafruit_NeoPixel();
 
 BLEDis bledis;
 BLEHidAdafruit blehid;
@@ -39,10 +36,10 @@ typedef struct {
   int pin;
   int8_t value = 0;
   int16_t center = 465;
-  int16_t deadZone = 10;
+  int16_t deadZone = 2;
   int16_t deadZoneHigh;
   int16_t deadZoneLow;
-  int16_t scale = 16;
+  int16_t scale = 10;
 } Axis;
 
 Axis xAxis;
@@ -50,6 +47,10 @@ Axis yAxis;
 
 void setup()
 {
+  pinMode(LED_BLUE, OUTPUT);
+
+  digitalWrite(LED_BLUE, HIGH);
+  
   Serial.begin(115200);
   for(int i=100; i > 0; i--) {
     if( Serial ) {
@@ -59,30 +60,24 @@ void setup()
     }
   }
 
-  Serial.println("Preparing Neopixel");
-
-  neopixel.updateLength(1);
-  neopixel.setPin(PIN_NEOPIXEL);
-  neopixel.updateType(NEO_KHZ800 | NEO_GRB);
-  
-  neopixel.begin();
-
-  neopixel.setBrightness(16);
-  neopixel.setPixelColor(0, 0, 0, 255);
-  neopixel.show();
-
   Serial.println("Preparing Bluetooth");
 
+  digitalWrite(LED_BLUE, LOW);
+
   Bluefruit.begin();
+
+    digitalWrite(LED_BLUE, HIGH);
+
+    Bluefruit.setName("CRAP-1");
+
   // HID Device can have a min connection interval of 9*1.25 = 11.25 ms
-  Bluefruit.setConnInterval(9, 16); // min = 9*1.25=11.25 ms, max = 16*1.25=20ms
+  Bluefruit.Periph.setConnInterval(9, 16); // min = 9*1.25=11.25 ms, max = 16*1.25=20ms
   // Set max power. Accepted values are: -40, -30, -20, -16, -12, -8, -4, 0, 4
   Bluefruit.setTxPower(0);
-  Bluefruit.setName("SCR-X1");
 
   // Configure and Start Device Information Service
   bledis.setManufacturer("BVH");
-  bledis.setModel("SCR-X1");
+  bledis.setModel("CRAP-R");
   bledis.begin();
 
   // BLE HID
@@ -167,8 +162,8 @@ void updateMousePosition() {
   int rawX = analogRead(MOUSE_X_PIN);
   int rawY = analogRead(MOUSE_Y_PIN);
 
-  xAxis.value = -readingToMouseDelta(rawX, &xAxis);
-  yAxis.value = -readingToMouseDelta(rawY, &yAxis);
+  xAxis.value = readingToMouseDelta(rawX, &xAxis);
+  yAxis.value = readingToMouseDelta(rawY, &yAxis);
 
 //  Serial.print(rawX);
 //  Serial.print(", ");
@@ -237,9 +232,6 @@ void sendUpdate() {
       || yAxis.value != 0) {
     blehid.mouseReport(buttons, xAxis.value, yAxis.value);
     previousButtons = buttons;
-
-    neopixel.setPixelColor(0, leftButton.state ? 100 : 0, rightButton.state ? 100 : 0, 0);
-    neopixel.show();
   }
 }
 
@@ -254,7 +246,5 @@ void updateMouseState() {
 
 void loop()
 {
-
   updateMouseState();
-
 }
