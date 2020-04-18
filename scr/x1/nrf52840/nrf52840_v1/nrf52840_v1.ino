@@ -11,16 +11,66 @@
   All text above, and the splash screen below must be included in
   any redistribution
 *********************************************************************/
+
+
 #include <bluefruit.h>
 
 BLEDis bledis;
 BLEHidAdafruit blehid;
+
+//https://github.com/adafruit/Adafruit_nRF52_Arduino/blob/master/variants/feather_nrf52840_express/variant.cpp
+//
+
+#define NEW_PIN_LAYOUT 1
+
+#define DEBUG_PINS 1
+
+#ifndef NEW_PIN_LAYOUT
+
+#define BATT_SENSE PIN_VBAT
 
 #define MOUSE_X_PIN A1
 #define MOUSE_Y_PIN A0
 
 #define LCLICK_PIN 11
 #define RCLICK_PIN 12
+
+#ifdef DEBUG_PINS
+
+#define DEBUG_1 19
+#define DEBUG_2 18
+#define DEBUG_3 20
+#define DEBUG_4 21
+
+#endif
+
+
+#else
+
+#define LED_STATUS 0
+
+#define BATT_SENSE PIN_VBAT
+
+//SPI pin defaults are defined at board level
+
+#ifdef DEBUG_PINS
+
+#define DEBUG_1 6
+#define DEBUG_2 7
+#define DEBUG_3 8
+#define DEBUG_4 9
+
+#define LCLICK_PIN 11
+#define RCLICK_PIN 12
+
+#else
+
+#define LCLICK_PIN 6
+#define RCLICK_PIN 7
+
+#endif
+
+#endif
 
 typedef struct {
   int pin;
@@ -36,7 +86,7 @@ typedef struct {
   int pin;
   int8_t value = 0;
   int16_t center = 465;
-  int16_t deadZone = 2;
+  int16_t deadZone = 1;
   int16_t deadZoneHigh;
   int16_t deadZoneLow;
   int16_t scale = 10;
@@ -45,11 +95,47 @@ typedef struct {
 Axis xAxis;
 Axis yAxis;
 
+void setupDebug() {
+#ifdef DEBUG_PINS
+  pinMode(DEBUG_1, OUTPUT);
+  pinMode(DEBUG_2, OUTPUT);
+  pinMode(DEBUG_3, OUTPUT);
+  pinMode(DEBUG_4, OUTPUT);
+#endif
+}
+
+void setDebug(int i) {
+#ifdef DEBUG_PINS
+  digitalWrite(DEBUG_1, i & 0x01 ? HIGH : LOW);
+  digitalWrite(DEBUG_2, i & 0x02 ? HIGH : LOW);
+  digitalWrite(DEBUG_3, i & 0x04 ? HIGH : LOW);
+  digitalWrite(DEBUG_4, i & 0x08 ? HIGH : LOW);
+
+  Serial.print("Debug: ");
+  Serial.println(i, HEX);
+  Serial.flush();
+#endif
+}
+
+__WEAK void app_error_fault_handler(uint32_t id, uint32_t pc, uint32_t info)
+{
+  setDebug(0x08);
+}
+
 void setup()
 {
-  pinMode(LED_BLUE, OUTPUT);
+  pinMode(LED_STATUS, OUTPUT);
 
-  digitalWrite(LED_BLUE, HIGH);
+  setupDebug();  
+
+  for(int i = 0; i < 0x0F; i++) {
+    setDebug(i);
+    delay(500);
+  }
+
+  setDebug(1);
+
+  digitalWrite(LED_STATUS, HIGH);
   
   Serial.begin(115200);
   for(int i=100; i > 0; i--) {
@@ -60,13 +146,19 @@ void setup()
     }
   }
 
+  setDebug(2);
+
   Serial.println("Preparing Bluetooth");
 
-  digitalWrite(LED_BLUE, LOW);
+  digitalWrite(LED_STATUS, LOW);
+
+  setDebug(3);
 
   Bluefruit.begin();
 
-    digitalWrite(LED_BLUE, HIGH);
+  setDebug(4);
+
+    digitalWrite(LED_STATUS, HIGH);
 
     Bluefruit.setName("CRAP-1");
 
@@ -80,34 +172,42 @@ void setup()
   bledis.setModel("CRAP-R");
   bledis.begin();
 
+  setDebug(5);
+
   // BLE HID
   blehid.begin();
+
+  setDebug(6);
 
   // Set up and start advertising
   startAdv();
 
+  setDebug(7);
+
   Serial.println("Advertising started");
 
-  pinMode(LCLICK_PIN, INPUT_PULLUP);
-  pinMode(RCLICK_PIN, INPUT_PULLUP);
+//  pinMode(LCLICK_PIN, INPUT_PULLUP);
+//  pinMode(RCLICK_PIN, INPUT_PULLUP);
+//
+//  leftButton.pin = LCLICK_PIN;
+//  rightButton.pin = RCLICK_PIN;
+//
+//  xAxis.pin = MOUSE_X_PIN;
+//  xAxis.center = analogRead(xAxis.pin);
+//  xAxis.deadZoneHigh = xAxis.center + xAxis.deadZone;
+//  xAxis.deadZoneLow = xAxis.center - xAxis.deadZone;
+//  yAxis.pin = MOUSE_Y_PIN;
+//  yAxis.center = analogRead(yAxis.pin);
+//  yAxis.deadZoneHigh = yAxis.center + yAxis.deadZone;
+//  yAxis.deadZoneLow = yAxis.center - yAxis.deadZone;
+//
+//  Serial.print("xAxis: ");
+//  Serial.println(xAxis.center);
+//
+//  Serial.print("yAxis: ");
+//  Serial.println(yAxis.center);
 
-  leftButton.pin = LCLICK_PIN;
-  rightButton.pin = RCLICK_PIN;
-
-  xAxis.pin = MOUSE_X_PIN;
-  xAxis.center = analogRead(xAxis.pin);
-  xAxis.deadZoneHigh = xAxis.center + xAxis.deadZone;
-  xAxis.deadZoneLow = xAxis.center - xAxis.deadZone;
-  yAxis.pin = MOUSE_Y_PIN;
-  yAxis.center = analogRead(yAxis.pin);
-  yAxis.deadZoneHigh = yAxis.center + yAxis.deadZone;
-  yAxis.deadZoneLow = yAxis.center - yAxis.deadZone;
-
-  Serial.print("xAxis: ");
-  Serial.println(xAxis.center);
-
-  Serial.print("yAxis: ");
-  Serial.println(yAxis.center);
+  setDebug(8);
 }
 
 void startAdv(void)
@@ -159,12 +259,15 @@ int8_t readingToMouseDelta(int value, Axis* axis) {
 }
 
 void updateMousePosition() {
+  #ifdef MOUSE_X_PIN
+  
   int rawX = analogRead(MOUSE_X_PIN);
   int rawY = analogRead(MOUSE_Y_PIN);
 
   xAxis.value = readingToMouseDelta(rawX, &xAxis);
   yAxis.value = readingToMouseDelta(rawY, &yAxis);
 
+#endif
 //  Serial.print(rawX);
 //  Serial.print(", ");
 //  Serial.print(rawY);
@@ -244,7 +347,17 @@ void updateMouseState() {
   sendUpdate();
 }
 
+void updateBatteryState() {
+#ifdef BATT_SENSE
+  int battValue = analogRead(BATT_SENSE);
+
+  Serial.print("Battery: ");
+  Serial.println(battValue);
+#endif
+}
+
 void loop()
 {
   updateMouseState();
+  updateBatteryState();
 }

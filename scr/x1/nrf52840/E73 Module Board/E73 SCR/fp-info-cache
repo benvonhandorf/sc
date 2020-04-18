@@ -1,4 +1,4 @@
-44189278345985
+45770830312985
 ESP8266
 ESP-01
 Module, ESP-8266, ESP-01, 8 pin
@@ -83,20 +83,6 @@ SolderJumper
 0
 2
 2
-nrf52
-E73(2G4M08S1C)
-
-
-0
-43
-43
-nrf52
-E73(2G4M08S1C)-HandSoldered
-
-
-0
-43
-43
 Power
 5.5mm_Barrel_Jack
 
@@ -168,6 +154,13 @@ TacButton_6mm_6mm_Or_SMD_5mm_5mm
 4
 2
 Switches
+TacButton_12mm_12mm_LED-optional
+
+
+0
+6
+4
+Switches
 TacButton_SMD_5mm_5mm
 
 
@@ -202,3 +195,17 @@ SwitchingRegulator_Selectable
 0
 4
 4
+nrf52
+E73(2G4M08S1C)
+
+
+0
+43
+43
+nrf52
+E73(2G4M08S1C)-HandSoldered
+
+
+0
+43
+43
