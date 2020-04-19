@@ -122,6 +122,8 @@ void setup()
     }
   }
 
+  delay(5000);
+
   setDebug(2);
 
   spiTrackball.initialize();
@@ -172,10 +174,13 @@ void setup()
 
 #ifdef MOUSE_X_PIN
   xAxis.pin = MOUSE_X_PIN;
+  pinModel(xAxis.pin, INPUT);
   xAxis.center = analogRead(xAxis.pin);
   xAxis.deadZoneHigh = xAxis.center + xAxis.deadZone;
   xAxis.deadZoneLow = xAxis.center - xAxis.deadZone;
+  
   yAxis.pin = MOUSE_Y_PIN;
+  pinModel(yAxis.pin, INPUT);
   yAxis.center = analogRead(yAxis.pin);
   yAxis.deadZoneHigh = yAxis.center + yAxis.deadZone;
   yAxis.deadZoneLow = yAxis.center - yAxis.deadZone;
@@ -246,8 +251,8 @@ int8_t readingToMouseDelta(int value, Axis* axis) {
 void updateMousePosition() {
 #ifdef MOUSE_X_PIN
   
-  int rawX = analogRead(MOUSE_X_PIN);
-  int rawY = analogRead(MOUSE_Y_PIN);
+  int rawX = analogRead(xAxis.pin);
+  int rawY = analogRead(yAxis.pin);
 
   xAxis.value = readingToMouseDelta(rawX, &xAxis);
   yAxis.value = readingToMouseDelta(rawY, &yAxis);
@@ -266,10 +271,10 @@ void updateMousePosition() {
     yAxis.value = 0;
   }
 #endif
-  Serial.print(xAxis.value);
-  Serial.print(", ");
-  Serial.print(yAxis.value);
-  Serial.println();
+//  Serial.print(xAxis.value);
+//  Serial.print(", ");
+//  Serial.print(yAxis.value);
+//  Serial.println();
 }
 
 #define DEBOUNCE_LOCKOUT_MS 10
@@ -277,7 +282,7 @@ void updateMousePosition() {
 
 void updateButtonState(unsigned long now, ButtonState* buttonState) {
   if (now > buttonState->update + DEBOUNCE_LOCKOUT_MS) {
-    uint8_t state = digitalRead(buttonState->pin);
+    uint8_t state = !digitalRead(buttonState->pin);
 
     if (buttonState->latch == 1) {
       if (state == 1) {
@@ -325,7 +330,14 @@ bool sendUpdate() {
       || yAxis.value != 0) {
     blehid.mouseReport(buttons, xAxis.value, yAxis.value);
     previousButtons = buttons;
-    
+
+    Serial.print(xAxis.value);
+    Serial.print(", ");
+    Serial.print(yAxis.value);
+    Serial.print(", ");
+    Serial.print(buttons, HEX);
+    Serial.println();
+
     return true;
   } else {
     return false;
@@ -373,4 +385,6 @@ void loop()
   
   updateMouseState();
   updateBatteryState();
+
+  delay(1);
 }
