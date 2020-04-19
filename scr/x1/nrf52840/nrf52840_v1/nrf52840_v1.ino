@@ -17,33 +17,22 @@
 
 BLEDis bledis;
 BLEHidAdafruit blehid;
+BLEBas bleBattery;
 
 //https://github.com/adafruit/Adafruit_nRF52_Arduino/blob/master/variants/feather_nrf52840_express/variant.cpp
 //
 
 #define NEW_PIN_LAYOUT 1
 
-#define DEBUG_PINS 1
-
 #ifndef NEW_PIN_LAYOUT
 
 #define BATT_SENSE PIN_VBAT
 
-#define MOUSE_X_PIN A1
+#define MOUSE_X_PIN A1s
 #define MOUSE_Y_PIN A0
 
 #define LCLICK_PIN 11
 #define RCLICK_PIN 12
-
-#ifdef DEBUG_PINS
-
-#define DEBUG_1 19
-#define DEBUG_2 18
-#define DEBUG_3 20
-#define DEBUG_4 21
-
-#endif
-
 
 #else
 
@@ -53,22 +42,18 @@ BLEHidAdafruit blehid;
 
 //SPI pin defaults are defined at board level
 
-#ifdef DEBUG_PINS
-
-#define DEBUG_1 6
-#define DEBUG_2 7
-#define DEBUG_3 8
-#define DEBUG_4 9
-
-#define LCLICK_PIN 11
-#define RCLICK_PIN 12
-
-#else
-
 #define LCLICK_PIN 6
 #define RCLICK_PIN 7
 
+#define SPI_TRACKBALL 1
+
 #endif
+
+#ifdef SPI_TRACKBALL
+
+#include "SPITrackball.h"
+
+SPITrackball spiTrackball(SS);
 
 #endif
 
@@ -117,27 +102,18 @@ void setDebug(int i) {
 #endif
 }
 
-__WEAK void app_error_fault_handler(uint32_t id, uint32_t pc, uint32_t info)
-{
-  setDebug(0x08);
-}
-
 void setup()
 {
   pinMode(LED_STATUS, OUTPUT);
 
-  setupDebug();  
+  Serial.begin(115200);
 
-  for(int i = 0; i < 0x0F; i++) {
-    setDebug(i);
-    delay(500);
-  }
+  setupDebug();  
 
   setDebug(1);
 
   digitalWrite(LED_STATUS, HIGH);
-  
-  Serial.begin(115200);
+ 
   for(int i=100; i > 0; i--) {
     if( Serial ) {
       break;
@@ -147,6 +123,8 @@ void setup()
   }
 
   setDebug(2);
+
+  spiTrackball.initialize();
 
   Serial.println("Preparing Bluetooth");
 
@@ -158,9 +136,7 @@ void setup()
 
   setDebug(4);
 
-    digitalWrite(LED_STATUS, HIGH);
-
-    Bluefruit.setName("CRAP-1");
+  Bluefruit.setName("CRAP-1");
 
   // HID Device can have a min connection interval of 9*1.25 = 11.25 ms
   Bluefruit.Periph.setConnInterval(9, 16); // min = 9*1.25=11.25 ms, max = 16*1.25=20ms
@@ -177,6 +153,8 @@ void setup()
   // BLE HID
   blehid.begin();
 
+  bleBattery.begin();
+
   setDebug(6);
 
   // Set up and start advertising
@@ -186,28 +164,32 @@ void setup()
 
   Serial.println("Advertising started");
 
-//  pinMode(LCLICK_PIN, INPUT_PULLUP);
-//  pinMode(RCLICK_PIN, INPUT_PULLUP);
-//
-//  leftButton.pin = LCLICK_PIN;
-//  rightButton.pin = RCLICK_PIN;
-//
-//  xAxis.pin = MOUSE_X_PIN;
-//  xAxis.center = analogRead(xAxis.pin);
-//  xAxis.deadZoneHigh = xAxis.center + xAxis.deadZone;
-//  xAxis.deadZoneLow = xAxis.center - xAxis.deadZone;
-//  yAxis.pin = MOUSE_Y_PIN;
-//  yAxis.center = analogRead(yAxis.pin);
-//  yAxis.deadZoneHigh = yAxis.center + yAxis.deadZone;
-//  yAxis.deadZoneLow = yAxis.center - yAxis.deadZone;
-//
-//  Serial.print("xAxis: ");
-//  Serial.println(xAxis.center);
-//
-//  Serial.print("yAxis: ");
-//  Serial.println(yAxis.center);
+  pinMode(LCLICK_PIN, INPUT_PULLUP);
+  pinMode(RCLICK_PIN, INPUT_PULLUP);
+
+  leftButton.pin = LCLICK_PIN;
+  rightButton.pin = RCLICK_PIN;
+
+#ifdef MOUSE_X_PIN
+  xAxis.pin = MOUSE_X_PIN;
+  xAxis.center = analogRead(xAxis.pin);
+  xAxis.deadZoneHigh = xAxis.center + xAxis.deadZone;
+  xAxis.deadZoneLow = xAxis.center - xAxis.deadZone;
+  yAxis.pin = MOUSE_Y_PIN;
+  yAxis.center = analogRead(yAxis.pin);
+  yAxis.deadZoneHigh = yAxis.center + yAxis.deadZone;
+  yAxis.deadZoneLow = yAxis.center - yAxis.deadZone;
+
+  Serial.print("xAxis: ");
+  Serial.println(xAxis.center);
+
+  Serial.print("yAxis: ");
+  Serial.println(yAxis.center);
+#endif
 
   setDebug(8);
+
+  digitalWrite(LED_STATUS, HIGH);
 }
 
 void startAdv(void)
@@ -220,6 +202,9 @@ void startAdv(void)
 
   // Include BLE HID service
   Bluefruit.Advertising.addService(blehid);
+
+  // Add the Battery service
+  Bluefruit.Advertising.addService(bleBattery);
 
   // There is enough room for 'Name' in the advertising packet
   Bluefruit.Advertising.addName();
@@ -259,7 +244,7 @@ int8_t readingToMouseDelta(int value, Axis* axis) {
 }
 
 void updateMousePosition() {
-  #ifdef MOUSE_X_PIN
+#ifdef MOUSE_X_PIN
   
   int rawX = analogRead(MOUSE_X_PIN);
   int rawY = analogRead(MOUSE_Y_PIN);
@@ -268,10 +253,23 @@ void updateMousePosition() {
   yAxis.value = readingToMouseDelta(rawY, &yAxis);
 
 #endif
-//  Serial.print(rawX);
-//  Serial.print(", ");
-//  Serial.print(rawY);
-//  Serial.println();
+
+#ifdef SPI_TRACKBALL
+  if(spiTrackball.poll()) {
+    int8_t rawX = spiTrackball.getX();
+    int8_t rawY = spiTrackball.getY();
+
+    xAxis.value = rawX;
+    yAxis.value = rawY;
+  } else { 
+    xAxis.value = 0;
+    yAxis.value = 0;
+  }
+#endif
+  Serial.print(xAxis.value);
+  Serial.print(", ");
+  Serial.print(yAxis.value);
+  Serial.println();
 }
 
 #define DEBOUNCE_LOCKOUT_MS 10
@@ -318,46 +316,61 @@ void updateButtonState(unsigned long now, ButtonState* buttonState) {
 
 uint8_t previousButtons = 0;
 
-void sendUpdate() {
+bool sendUpdate() {
   uint8_t buttons = leftButton.state ? MOUSE_BUTTON_LEFT : 0
                     || rightButton.state ? MOUSE_BUTTON_RIGHT : 0;
-
-  //  Serial.print("RPT: ");
-  //  Serial.print(buttons, HEX);
-  //  Serial.print(" : ");
-  //  Serial.print(mouseX);
-  //  Serial.print(" : ");
-  //  Serial.print(mouseY);
-  //  Serial.println();
 
   if (buttons != previousButtons
       || xAxis.value != 0
       || yAxis.value != 0) {
     blehid.mouseReport(buttons, xAxis.value, yAxis.value);
     previousButtons = buttons;
+    
+    return true;
+  } else {
+    return false;
   }
 }
 
-void updateMouseState() {
+bool updateMouseState() {
   unsigned long now = millis();
   updateButtonState(now, &leftButton);
   updateButtonState(now, &rightButton);
   updateMousePosition();
 
-  sendUpdate();
+  return sendUpdate();
 }
+
+int lastBatteryPoll = 0;
+
+#define BATT_MAX 610
+#define BATT_MIN 500
 
 void updateBatteryState() {
 #ifdef BATT_SENSE
-  int battValue = analogRead(BATT_SENSE);
+  if(millis() - lastBatteryPoll > 30000) {
+    int battValue = analogRead(BATT_SENSE);
 
-  Serial.print("Battery: ");
-  Serial.println(battValue);
+    int battPercentage = ((battValue - BATT_MIN) * 100) / (BATT_MAX - BATT_MIN);
+
+    battPercentage = max(0, battPercentage);
+    battPercentage = min(100, battPercentage);
+
+    bleBattery.write((uint8_t) battPercentage);
+  
+    Serial.print("Battery: ");
+    Serial.print(battValue);
+    Serial.print(" pct: ");
+    Serial.println(battPercentage);
+    lastBatteryPoll = millis();
+  } 
 #endif
 }
 
 void loop()
 {
+  digitalWrite(LED_STATUS, LOW);
+  
   updateMouseState();
   updateBatteryState();
 }
