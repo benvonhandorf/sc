@@ -99,6 +99,8 @@ F 3 "" H 8450 1000 50  0001 C CNN
 	1    8450 1000
 	1    0    0    -1  
 $EndComp
+Text Notes 8150 1700 0    50   ~ 10
+Check this wiring.  Guessing from Adafruit
 NoConn ~ 1900 2000
 $Comp
 L power:GND #PWR03
