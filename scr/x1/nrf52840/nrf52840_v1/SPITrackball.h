@@ -26,6 +26,8 @@ private:
 
   bool validateResponse(const byte *expectedData, uint8_t length);
 
+  bool isNullResponse(uint8_t length);
+
   void printBuffer(const byte *data, uint8_t length);
 };
 

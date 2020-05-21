@@ -28,7 +28,7 @@ BLEBas bleBattery;
 
 #define BATT_SENSE PIN_VBAT
 
-#define MOUSE_X_PIN A1s
+#define MOUSE_X_PIN A1
 #define MOUSE_Y_PIN A0
 
 #define LCLICK_PIN 11
@@ -125,8 +125,19 @@ void setup()
   delay(5000);
 
   setDebug(2);
+  
+#ifdef SPI_TRACKBALL
+  if(!spiTrackball.initialize()) {
+    Serial.println("Trackball not available.");
 
-  spiTrackball.initialize();
+    while(true) {
+      digitalWrite(LED_STATUS, HIGH);
+      delay(1000);
+      digitalWrite(LED_STATUS, LOW);
+      delay(200);
+    }
+  }
+#endif
 
   Serial.println("Preparing Bluetooth");
 
@@ -195,6 +206,8 @@ void setup()
   setDebug(8);
 
   digitalWrite(LED_STATUS, HIGH);
+
+  Serial.println("Setup complete");
 }
 
 void startAdv(void)
@@ -381,10 +394,11 @@ void updateBatteryState() {
 
 void loop()
 {
-  digitalWrite(LED_STATUS, LOW);
-  
-  updateMouseState();
+  if(updateMouseState()) {
+    digitalWrite(LED_STATUS, HIGH);
+    Serial.println("Content sent");
+  } else {
+    digitalWrite(LED_STATUS, LOW);
+  }
   updateBatteryState();
-
-  delay(1);
 }
