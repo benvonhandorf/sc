@@ -1,2 +1,3 @@
 (sym_lib_table
+  (lib (name E73-SCR-rescue)(type Legacy)(uri "${KIPRJMOD}/E73 SCR-rescue.lib")(options "")(descr ""))
 )

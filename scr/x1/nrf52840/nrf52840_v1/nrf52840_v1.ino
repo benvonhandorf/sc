@@ -12,7 +12,6 @@
   any redistribution
 *********************************************************************/
 
-
 #include <bluefruit.h>
 
 BLEDis bledis;
@@ -36,7 +35,7 @@ BLEBas bleBattery;
 
 #else
 
-#define LED_STATUS 0
+#define LED_STATUS LED_BUILTIN
 
 #define BATT_SENSE PIN_VBAT
 
@@ -104,8 +103,6 @@ void setDebug(int i) {
 
 void setup()
 {
-  pinMode(LED_STATUS, OUTPUT);
-
   Serial.begin(115200);
 
   setupDebug();  
@@ -121,6 +118,8 @@ void setup()
       delay(10);   // for nrf52840 with native usb
     }
   }
+
+  Serial.println("Serial available");
 
   delay(5000);
 
@@ -140,6 +139,8 @@ void setup()
 #endif
 
   Serial.println("Preparing Bluetooth");
+
+  Serial.flush();
 
   digitalWrite(LED_STATUS, LOW);
 
@@ -280,14 +281,15 @@ void updateMousePosition() {
     xAxis.value = rawX;
     yAxis.value = rawY;
   } else { 
+    Serial.println("No trackball data");
     xAxis.value = 0;
     yAxis.value = 0;
   }
 #endif
-//  Serial.print(xAxis.value);
-//  Serial.print(", ");
-//  Serial.print(yAxis.value);
-//  Serial.println();
+  Serial.print(xAxis.value);
+  Serial.print(", ");
+  Serial.print(yAxis.value);
+  Serial.println();
 }
 
 #define DEBOUNCE_LOCKOUT_MS 10
@@ -392,13 +394,21 @@ void updateBatteryState() {
 #endif
 }
 
+int counter = 0;
+
 void loop()
 {
   if(updateMouseState()) {
     digitalWrite(LED_STATUS, HIGH);
-    Serial.println("Content sent");
+    counter = 0;
   } else {
     digitalWrite(LED_STATUS, LOW);
+    counter++;
+    if( counter > 1000 ) {
+      Serial.print("No content - ");
+      Serial.println(millis());
+      counter = 0;
+    }
   }
   updateBatteryState();
 }

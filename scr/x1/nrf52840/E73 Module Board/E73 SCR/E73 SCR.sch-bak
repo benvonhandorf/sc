@@ -1,5 +1,5 @@
 EESchema Schematic File Version 4
-EELAYER 29 0
+EELAYER 30 0
 EELAYER END
 $Descr A4 11693 8268
 encoding utf-8
@@ -99,8 +99,6 @@ F 3 "" H 8450 1000 50  0001 C CNN
 	1    8450 1000
 	1    0    0    -1  
 $EndComp
-Text Notes 8150 1700 0    50   ~ 10
-Check this wiring.  Guessing from Adafruit
 NoConn ~ 1900 2000
 $Comp
 L power:GND #PWR03
