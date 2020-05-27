@@ -62,7 +62,7 @@
 #include "ble_err.h"
 #include "ble_hci.h"
 #include "ble_srv_common.h"
-#include "ble_advdata.h"
+#include "ble_advdata.h" 
 #include "ble_hids.h"
 #include "ble_bas.h"
 #include "ble_dis.h"
@@ -87,6 +87,7 @@
 #include "nrf_log_ctrl.h"
 #include "nrf_log_default_backends.h"
 
+#include "peripherals/m570/SPITrackball.h"
 
 #define DEVICE_NAME                     "CRAP v2"                                /**< Name of device. Will be included in the advertising data. */
 #define MANUFACTURER_NAME               "NordicSemiconductor"                       /**< Manufacturer. Will be passed to Device Information Service. */
@@ -941,8 +942,8 @@ static void ble_evt_handler(ble_evt_t const * p_ble_evt, void * p_context)
             NRF_LOG_DEBUG("PHY update request.");
             ble_gap_phys_t const phys =
             {
-                .rx_phys = BLE_GAP_PHY_AUTO,
                 .tx_phys = BLE_GAP_PHY_AUTO,
+                .rx_phys = BLE_GAP_PHY_AUTO,
             };
             err_code = sd_ble_gap_phy_update(p_ble_evt->evt.gap_evt.conn_handle, &phys);
             APP_ERROR_CHECK(err_code);
@@ -1258,16 +1259,19 @@ static void idle_state_handle(void)
     }
 }
 
-
 /**@brief Function for application main entry.
  */
 int main(void)
 {
+    SPITrackball *trackball = new SPITrackball(SPI_SS);
     bool erase_bonds;
 
     // Initialize.
     log_init();
     timers_init();
+
+    trackball->initialize();
+
     buttons_leds_init(&erase_bonds);
     bsp_board_led_on(0);
     NRF_LOG_INFO("LED ON.");
@@ -1282,7 +1286,7 @@ int main(void)
     conn_params_init();
     peer_manager_init();
 
-    //bsp_board_led_off(0);
+    bsp_board_led_off(0);
     NRF_LOG_INFO("LED OFF.");
 
     // Start execution.
@@ -1291,9 +1295,17 @@ int main(void)
     advertising_start(erase_bonds);
 
     // Enter main loop.
-    for (;;)
-    {
-        idle_state_handle();
+    while (true) {
+        if(trackball->poll()) {
+          __WFE();
+          while(!trackball->pollResults()) {
+            __WFE();
+            int8_t deltaX = trackball->getX();
+            int8_t deltaY = trackball->getY();
+
+            NRF_LOG_INFO("Trackball reports %d, %d", deltaX, deltaY);
+          }
+        }
     }
 }
 
