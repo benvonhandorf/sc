@@ -8,6 +8,7 @@
 #include "nrf_log.h"
 #include "nrf_log_ctrl.h"
 #include "nrf_log_default_backends.h"
+#include "app_scheduler.h"
 
 #include "initialization.h"
 #include "poll.h"
@@ -16,17 +17,12 @@
 
 static SPITrackball* instance;
 
-void spim_event_handler(nrfx_spim_evt_t const * p_event,
-                       void *                  p_context)
-{
-    NRF_LOG_INFO("Transfer completed. - %d", instance->responseAction);
-    NRF_LOG_FLUSH();
-
+void processTransferResults(void * p_event_data, uint16_t event_size) {
     switch(instance->responseAction) {
-      case 0:
+      case 1:
         instance->initializePhase1Response();
         break;
-      case 1:
+      case 2:
         instance->initializePhase2Response();
         break;
       case 10:
@@ -38,14 +34,26 @@ void spim_event_handler(nrfx_spim_evt_t const * p_event,
     }
 }
 
+void spim_event_handler(nrfx_spim_evt_t const * p_event,
+                       void *                  p_context) {
+  app_sched_event_put(NULL, 0, processTransferResults);
+}
+
+
 #define SPI_INSTANCE  3                                           /**< SPI instance index. */
 static const nrfx_spim_t spi = NRFX_SPIM_INSTANCE(SPI_INSTANCE);  /**< SPI instance. */
 
 SPITrackball::SPITrackball(uint32_t csPin) {
-  this->csPin = csPin;
+  responseAction = 0;
 
-  this->initialized = false;
+  csPin = csPin;
+
+  initialized = false;
   instance = this;
+}
+
+bool SPITrackball::transferInProcess() {
+  return responseAction != 0;
 }
 
 bool SPITrackball::initialize() {
@@ -62,7 +70,7 @@ bool SPITrackball::initialize() {
   spi_config.miso_pin       = SPI_MISO;
   spi_config.mosi_pin       = SPI_MOSI;
   spi_config.sck_pin        = SPI_SCK;
-  spi_config.use_hw_ss      = true;
+  spi_config.use_hw_ss      = false;
   spi_config.ss_active_high = false;
   nrfx_err_t retval = nrfx_spim_init(&spi, &spi_config, spim_event_handler, NULL);
   APP_ERROR_CHECK(retval);
@@ -97,6 +105,7 @@ void SPITrackball::initializePhase1Response() {
 
   transferBuffer(initialize_cmd_2, sizeof(initialize_cmd_2));
 }
+
 void SPITrackball::initializePhase2Response(){
   if(!validateResponse(initialize_response_2, sizeof(initialize_response_2))) {
     NRF_LOG_INFO("Initialize cmd 2 returned unexpected data");
@@ -116,6 +125,7 @@ void SPITrackball::initializePhase2Response(){
   NRF_LOG_INFO("SPITrackball Initialized");
   NRF_LOG_FLUSH();
 }
+
 void SPITrackball::pollPhase1Response(){
   if(!validateResponse(poll_response_1, sizeof(poll_response_1))) {
     NRF_LOG_INFO("Poll cmd 1 returned unexpected data");
@@ -131,7 +141,7 @@ void SPITrackball::pollPhase1Response(){
     }
   }
 
-  responseAction = 11;
+  responseAction = 2;
   transferBuffer(poll_cmd_2, sizeof(poll_cmd_2));
 }
 
@@ -140,6 +150,8 @@ void SPITrackball::pollPhase2Response(){
   xDelta = (int8_t) receiveBuffer[2];
 
   responseAction = 0;
+  pollInProcess = false;
+  initialized = true;
 
   if(xDelta != 0
     || yDelta != 0) {
@@ -152,8 +164,7 @@ bool SPITrackball::poll() {
     return false;
   }
 
-  return false;
-
+  pollInProcess = true;
   responseAction = 10;
 
   transferBuffer(poll_cmd_1, sizeof(poll_cmd_1));
@@ -162,7 +173,7 @@ bool SPITrackball::poll() {
 }
 
 bool SPITrackball::pollResults() {
-  return responseAction == 0;
+  return !pollInProcess;
 }
 
 int8_t SPITrackball::getX() {
@@ -174,8 +185,6 @@ int8_t SPITrackball::getY() {
 }
 
 void SPITrackball::transferBuffer(const uint8_t *source, uint8_t length) {
-  NRF_LOG_INFO("transferBuffer: %d", length);
-
   memcpy(this->transmitBuffer, source, length);
   memset(this->receiveBuffer, 0, length);
 

@@ -7,6 +7,8 @@ class SPITrackball {
 public:
   SPITrackball(uint32_t csPin);
 
+  bool transferInProcess();
+
   bool initialize();
 
   bool poll();
@@ -24,6 +26,7 @@ public:
 
 private:
   bool initialized;
+  uint8_t pollInProcess;
   uint8_t csPin;
 
   int8_t xDelta;
