@@ -14,7 +14,7 @@ Comment3 ""
 Comment4 ""
 $EndDescr
 $Comp
-L nrf52-modules:E73-2G4M08S1C-52840 U3
+L BVH_nrf52modules:E73-2G4M08S1C-52840 U3
 U 1 1 5CB695CE
 P 5700 2250
 F 0 "U3" H 5700 1050 50  0000 C CNN

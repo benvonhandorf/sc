@@ -1,4 +1,4 @@
-189448512285736
+191051023074736
 BVH_Components_Misc
 PAW3204
 
@@ -41,6 +41,13 @@ Potentiometer horizontal  Omeg PC16PU  Omeg PC16PU  Omeg PC16PU  Vishay/Spectrol
 0
 5
 3
+BVH_Components_Misc
+SMD_Speaker
+
+
+0
+0
+0
 BVH_Connectors_Misc
 Molex_0855055002_RJ-45_Jack_Shielded_Yaesu_Numbering
 
