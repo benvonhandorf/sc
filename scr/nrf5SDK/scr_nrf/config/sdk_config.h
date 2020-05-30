@@ -3530,7 +3530,7 @@
 // <e> NRFX_SPIM_CONFIG_LOG_ENABLED - Enables logging in the module.
 //==========================================================
 #ifndef NRFX_SPIM_CONFIG_LOG_ENABLED
-#define NRFX_SPIM_CONFIG_LOG_ENABLED 1
+#define NRFX_SPIM_CONFIG_LOG_ENABLED 0
 #endif
 // <o> NRFX_SPIM_CONFIG_LOG_LEVEL  - Default Severity level
  
@@ -6205,7 +6205,7 @@
 // <i> will fail.
 
 #ifndef APP_TIMER_CONFIG_OP_QUEUE_SIZE
-#define APP_TIMER_CONFIG_OP_QUEUE_SIZE 10
+#define APP_TIMER_CONFIG_OP_QUEUE_SIZE 20
 #endif
 
 // <q> APP_TIMER_CONFIG_USE_SCHEDULER  - Enable scheduling app_timer events to app_scheduler
@@ -7681,7 +7681,7 @@
 // <i> longer one will be fragmented.
 
 #ifndef NRF_LOG_BACKEND_UART_TEMP_BUFFER_SIZE
-#define NRF_LOG_BACKEND_UART_TEMP_BUFFER_SIZE 64
+#define NRF_LOG_BACKEND_UART_TEMP_BUFFER_SIZE 128
 #endif
 
 // </e>
@@ -7770,7 +7770,7 @@
 // <i> Log data is buffered and can be processed in idle.
 
 #ifndef NRF_LOG_DEFERRED
-#define NRF_LOG_DEFERRED 0
+#define NRF_LOG_DEFERRED 1
 #endif
 
 // <q> NRF_LOG_FILTERS_ENABLED  - Enable dynamic filtering of logs.
@@ -7879,7 +7879,7 @@
 // <i> Function for getting the timestamp is provided by the user
 //==========================================================
 #ifndef NRF_LOG_USES_TIMESTAMP
-#define NRF_LOG_USES_TIMESTAMP 0
+#define NRF_LOG_USES_TIMESTAMP 1
 #endif
 // <o> NRF_LOG_TIMESTAMP_DEFAULT_FREQUENCY - Default frequency of the timestamp (in Hz) or 0 to use app_timer frequency. 
 #ifndef NRF_LOG_TIMESTAMP_DEFAULT_FREQUENCY

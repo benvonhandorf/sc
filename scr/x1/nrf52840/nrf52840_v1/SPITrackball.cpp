@@ -14,12 +14,9 @@ SPITrackball::SPITrackball(uint8_t ssPin) {
 }
 
 bool SPITrackball::initialize() {
-  spiSettings = SPISettings(500000, MSBFIRST, SPI_MODE0);
+  spiSettings = SPISettings(125000, MSBFIRST, SPI_MODE0);
 
   pinMode(this->ssPin, OUTPUT);
-  pinMode(SCK, OUTPUT);
-  pinMode(MOSI, OUTPUT);
-  pinMode(MISO, INPUT);
 
   digitalWrite(this->ssPin, 1);
 

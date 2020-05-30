@@ -70,8 +70,8 @@ extern "C" {
 
 #define BUTTONS_LIST { BUTTON_1, BUTTON_2 }
 
-#define BSP_BUTTON_0   BUTTON_1
-#define BSP_BUTTON_1   BUTTON_2
+//#define BSP_BUTTON_0   BUTTON_1
+//#define BSP_BUTTON_1   BUTTON_2
 
 #define UART_RX_PIN_NUMBER  NRF_GPIO_PIN_MAP(0,3)
 #define UART_TX_PIN_NUMBER  NRF_GPIO_PIN_MAP(0,2)

@@ -19,7 +19,8 @@ static SPITrackball* instance;
 void spim_event_handler(nrfx_spim_evt_t const * p_event,
                        void *                  p_context)
 {
-    NRF_LOG_INFO("Transfer completed.");
+    NRF_LOG_INFO("Transfer completed. - %d", instance->responseAction);
+    NRF_LOG_FLUSH();
 
     switch(instance->responseAction) {
       case 0:
@@ -32,7 +33,7 @@ void spim_event_handler(nrfx_spim_evt_t const * p_event,
         instance->pollPhase1Response();
         break;
       case 11:
-        instance->pollPhase1Response();
+        instance->pollPhase2Response();
         break;
     }
 }
@@ -49,6 +50,9 @@ SPITrackball::SPITrackball(uint32_t csPin) {
 
 bool SPITrackball::initialize() {
   initialized = false;
+
+  NRF_LOG_INFO("Initialize 1");
+  NRF_LOG_FLUSH();
 
   nrfx_spim_xfer_desc_t xfer_desc = NRFX_SPIM_XFER_TRX(transmitBuffer, sizeof(transmitBuffer), receiveBuffer, sizeof(receiveBuffer));
 
@@ -87,6 +91,8 @@ void SPITrackball::initializePhase1Response() {
     }
   }
 
+  NRF_LOG_INFO("Initialize 2");
+
   responseAction = 2;
 
   transferBuffer(initialize_cmd_2, sizeof(initialize_cmd_2));
@@ -106,7 +112,9 @@ void SPITrackball::initializePhase2Response(){
 
   responseAction = 0;
   initialized = true;
+
   NRF_LOG_INFO("SPITrackball Initialized");
+  NRF_LOG_FLUSH();
 }
 void SPITrackball::pollPhase1Response(){
   if(!validateResponse(poll_response_1, sizeof(poll_response_1))) {
@@ -132,12 +140,19 @@ void SPITrackball::pollPhase2Response(){
   xDelta = (int8_t) receiveBuffer[2];
 
   responseAction = 0;
+
+  if(xDelta != 0
+    || yDelta != 0) {
+    NRF_LOG_INFO("Poll results: %d %d", xDelta, yDelta);
+  }
 }
 
 bool SPITrackball::poll() {
   if(!initialized) {
     return false;
   }
+
+  return false;
 
   responseAction = 10;
 
@@ -159,7 +174,10 @@ int8_t SPITrackball::getY() {
 }
 
 void SPITrackball::transferBuffer(const uint8_t *source, uint8_t length) {
+  NRF_LOG_INFO("transferBuffer: %d", length);
+
   memcpy(this->transmitBuffer, source, length);
+  memset(this->receiveBuffer, 0, length);
 
   nrfx_spim_xfer_desc_t xfer_desc = NRFX_SPIM_XFER_TRX(transmitBuffer, length, receiveBuffer, length);
 

@@ -1214,7 +1214,7 @@ static void buttons_leds_init(bool * p_erase_bonds)
     ret_code_t err_code;
     bsp_event_t startup_event;
 
-    err_code = bsp_init(BSP_INIT_LEDS | BSP_INIT_BUTTONS, bsp_event_handler);
+    err_code = bsp_init(BSP_INIT_LEDS, bsp_event_handler);
 
     APP_ERROR_CHECK(err_code);
 
@@ -1229,7 +1229,7 @@ static void buttons_leds_init(bool * p_erase_bonds)
  */
 static void log_init(void)
 {
-    ret_code_t err_code = NRF_LOG_INIT(NULL);
+    ret_code_t err_code = NRF_LOG_INIT(&app_timer_cnt_get);
     APP_ERROR_CHECK(err_code);
 
     NRF_LOG_DEFAULT_BACKENDS_INIT();
@@ -1270,8 +1270,6 @@ int main(void)
     log_init();
     timers_init();
 
-    trackball->initialize();
-
     buttons_leds_init(&erase_bonds);
     bsp_board_led_on(0);
     NRF_LOG_INFO("LED ON.");
@@ -1285,6 +1283,8 @@ int main(void)
     sensor_simulator_init();
     conn_params_init();
     peer_manager_init();
+
+    trackball->initialize();
 
     bsp_board_led_off(0);
     NRF_LOG_INFO("LED OFF.");
@@ -1300,10 +1300,16 @@ int main(void)
           __WFE();
           while(!trackball->pollResults()) {
             __WFE();
-            int8_t deltaX = trackball->getX();
-            int8_t deltaY = trackball->getY();
+          }
 
+          int8_t deltaX = trackball->getX();
+          int8_t deltaY = trackball->getY();
+
+          if(deltaX != 0
+            || deltaY != 0) {
             NRF_LOG_INFO("Trackball reports %d, %d", deltaX, deltaY);
+
+            mouse_movement_send(deltaX, deltaY);
           }
         }
     }
