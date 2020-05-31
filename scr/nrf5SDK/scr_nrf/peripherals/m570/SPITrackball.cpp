@@ -43,10 +43,10 @@ void spim_event_handler(nrfx_spim_evt_t const * p_event,
 #define SPI_INSTANCE  3                                           /**< SPI instance index. */
 static const nrfx_spim_t spi = NRFX_SPIM_INSTANCE(SPI_INSTANCE);  /**< SPI instance. */
 
-SPITrackball::SPITrackball(uint32_t csPin) {
+SPITrackball::SPITrackball(uint8_t csPin) {
   responseAction = 0;
 
-  csPin = csPin;
+  this->csPin = csPin;
 
   initialized = false;
   instance = this;
@@ -59,10 +59,8 @@ bool SPITrackball::transferInProcess() {
 bool SPITrackball::initialize() {
   initialized = false;
 
-  NRF_LOG_INFO("Initialize 1");
+  NRF_LOG_INFO("Initialize 1 - %u", csPin);
   NRF_LOG_FLUSH();
-
-  nrf_gpio_pin_port_decode(&csPin);
 
   nrfx_spim_xfer_desc_t xfer_desc = NRFX_SPIM_XFER_TRX(transmitBuffer, sizeof(transmitBuffer), receiveBuffer, sizeof(receiveBuffer));
 
