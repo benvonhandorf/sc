@@ -14,7 +14,7 @@ Comment3 ""
 Comment4 ""
 $EndDescr
 $Comp
-L BVH_nrf52modules:E73-2G4M08S1C-52840 U1
+L BVH_NRF52_Modules:E73-2G4M08S1C-52840 U1
 U 1 1 5CB695CE
 P 5700 2250
 F 0 "U1" H 5700 1050 50  0000 C CNN
@@ -500,8 +500,6 @@ F 3 "" H 8600 3300 50  0001 C CNN
 $EndComp
 Wire Wire Line
 	8600 3300 9050 3300
-Text GLabel 6500 1350 2    50   Input ~ 0
-P1_11
 NoConn ~ 1500 2200
 NoConn ~ 5550 1100
 NoConn ~ 6500 1750
@@ -592,42 +590,38 @@ NoConn ~ 9150 1300
 NoConn ~ 8650 1300
 NoConn ~ 9150 1200
 $Comp
-L Connector:Conn_01x06_Male J5
+L Connector_Generic:Conn_02x05_Odd_Even J5
 U 1 1 5EC5DE1D
-P 9250 4050
-F 0 "J5" H 9222 3930 50  0000 R CNN
-F 1 "XC3" H 9222 4021 50  0000 R CNN
-F 2 "Connectors_JST:JST_PH_B6B-PH-K_06x2.00mm_Straight" H 9250 4050 50  0001 C CNN
-F 3 "~" H 9250 4050 50  0001 C CNN
-	1    9250 4050
+P 9300 4250
+F 0 "J5" H 9400 3950 50  0000 R CNN
+F 1 "XC3" H 9450 4550 50  0000 R CNN
+F 2 "Connector_JST:JST_PHD_B10B-PHDSS_2x05_P2.00mm_Vertical" H 9300 4250 50  0001 C CNN
+F 3 "~" H 9300 4250 50  0001 C CNN
+	1    9300 4250
 	-1   0    0    1   
 $EndComp
 $Comp
 L power:GND #PWR017
 U 1 1 5EC6FF2B
-P 8600 4250
-F 0 "#PWR017" H 8600 4000 50  0001 C CNN
-F 1 "GND" H 8605 4077 50  0000 C CNN
-F 2 "" H 8600 4250 50  0001 C CNN
-F 3 "" H 8600 4250 50  0001 C CNN
-	1    8600 4250
+P 9700 4450
+F 0 "#PWR017" H 9700 4200 50  0001 C CNN
+F 1 "GND" H 9705 4277 50  0000 C CNN
+F 2 "" H 9700 4450 50  0001 C CNN
+F 3 "" H 9700 4450 50  0001 C CNN
+	1    9700 4450
 	1    0    0    -1  
 $EndComp
-Wire Wire Line
-	8600 4250 9050 4250
 $Comp
 L power:+3.3V #PWR016
 U 1 1 5EC6FF36
-P 8600 4150
-F 0 "#PWR016" H 8600 4000 50  0001 C CNN
-F 1 "+3.3V" H 8615 4323 50  0000 C CNN
-F 2 "" H 8600 4150 50  0001 C CNN
-F 3 "" H 8600 4150 50  0001 C CNN
-	1    8600 4150
+P 8600 4450
+F 0 "#PWR016" H 8600 4300 50  0001 C CNN
+F 1 "+3.3V" H 8615 4623 50  0000 C CNN
+F 2 "" H 8600 4450 50  0001 C CNN
+F 3 "" H 8600 4450 50  0001 C CNN
+	1    8600 4450
 	1    0    0    -1  
 $EndComp
-Wire Wire Line
-	8600 4150 9050 4150
 Text GLabel 6500 1650 2    50   Input ~ 0
 P0.28_A4
 Text GLabel 9100 2450 0    50   Input ~ 0
@@ -665,15 +659,14 @@ Text GLabel 6500 3950 2    50   Input ~ 0
 P1.02
 Text GLabel 6500 3850 2    50   Input ~ 0
 P1.00
-Text GLabel 9050 3950 0    50   Input ~ 0
+Text GLabel 8950 4350 0    50   Input ~ 0
 P1.00
-Text GLabel 9050 3850 0    50   Input ~ 0
+Text GLabel 9600 4250 2    50   Input ~ 0
 P1.02
 Text GLabel 6500 3750 2    50   Input ~ 0
 P0.24
-Text GLabel 9050 3750 0    50   Input ~ 0
+Text GLabel 8950 4250 0    50   Input ~ 0
 P0.24
-NoConn ~ 6500 1550
 NoConn ~ 6500 4050
 Text Notes 9550 2450 0    50   ~ 0
 Analog Joystick\nbreakout
@@ -691,7 +684,7 @@ Text GLabel 9050 2900 0    50   Input ~ 0
 P0.15
 Text GLabel 6500 3650 2    50   Input ~ 0
 P0.22
-Text GLabel 9050 4050 0    50   Input ~ 0
+Text GLabel 9600 4350 2    50   Input ~ 0
 P0.22
 Text Notes 9550 3200 0    50   ~ 0
 Single analog input
@@ -700,11 +693,7 @@ Extension Connectors\nAll available for SPI or I2C
 Wire Notes Line
 	8300 1750 10400 1750
 Wire Notes Line
-	10400 1750 10400 4650
-Wire Notes Line
-	10400 4650 8300 4650
-Wire Notes Line
-	8300 4650 8300 1750
+	10400 5000 8300 5000
 $Comp
 L Device:Speaker LS1
 U 1 1 5EC7A01F
@@ -798,11 +787,11 @@ Text GLabel 3600 4600 0    50   Input ~ 0
 LED_G
 Text GLabel 3600 4800 0    50   Input ~ 0
 LED_B
-Text GLabel 6500 2150 2    50   Input ~ 0
+Text GLabel 6500 1550 2    50   Input ~ 0
 LED_R
-Text GLabel 6500 2050 2    50   Input ~ 0
+Text GLabel 6500 1450 2    50   Input ~ 0
 LED_G
-Text GLabel 6500 1950 2    50   Input ~ 0
+Text GLabel 6500 1350 2    50   Input ~ 0
 LED_B
 Wire Notes Line
 	3300 3850 3300 5700
@@ -824,23 +813,46 @@ Wire Notes Line
 	7050 6400 7050 5350
 Wire Notes Line
 	7050 5350 5800 5350
-Text Notes 9550 3950 0    50   ~ 0
+Text Notes 9100 3900 0    50   ~ 0
 Digital only
-NoConn ~ 6500 1450
 Text GLabel 6500 2450 2    50   Input ~ 0
-P0_26
+P0.26
 Text GLabel 6500 2550 2    50   Input ~ 0
-P0_06
+P0.06
 Text GLabel 6500 3450 2    50   Input ~ 0
-P0_20
-Text GLabel 7100 2450 2    50   Input ~ 0
-P0_26
-Text GLabel 7100 2550 2    50   Input ~ 0
-P0_06
-Text GLabel 7100 2650 2    50   Input ~ 0
-P0_20
+P0.20
+Text GLabel 9600 4150 2    50   Input ~ 0
+P0.26
+Text GLabel 8950 4150 0    50   Input ~ 0
+P0.06
+Text GLabel 9600 4050 2    50   Input ~ 0
+P0.20
 Text GLabel 6500 3550 2    50   Input ~ 0
-P0_13
-Text GLabel 7100 2750 2    50   Input ~ 0
-P0_13
+P0.13
+Text GLabel 8950 4050 0    50   Input ~ 0
+P0.13
+Wire Notes Line
+	10400 1750 10400 5000
+Wire Notes Line
+	8300 1750 8300 5000
+Wire Wire Line
+	8600 4450 9000 4450
+Wire Wire Line
+	9500 4450 9700 4450
+Wire Wire Line
+	8950 4050 9000 4050
+Wire Wire Line
+	8950 4150 9000 4150
+Wire Wire Line
+	8950 4250 9000 4250
+Wire Wire Line
+	8950 4350 9000 4350
+Wire Wire Line
+	9500 4350 9600 4350
+Wire Wire Line
+	9500 4250 9600 4250
+Wire Wire Line
+	9500 4150 9600 4150
+Wire Wire Line
+	9500 4050 9600 4050
 $EndSCHEMATC
