@@ -141,7 +141,7 @@ void SPITrackball::pollPhase1Response(){
     }
   }
 
-  responseAction = 2;
+  responseAction = 11;
   transferBuffer(poll_cmd_2, sizeof(poll_cmd_2));
 }
 
@@ -151,12 +151,6 @@ void SPITrackball::pollPhase2Response(){
 
   responseAction = 0;
   pollInProcess = false;
-  initialized = true;
-
-  if(xDelta != 0
-    || yDelta != 0) {
-    NRF_LOG_INFO("Poll results: %d %d", xDelta, yDelta);
-  }
 }
 
 bool SPITrackball::poll() {
