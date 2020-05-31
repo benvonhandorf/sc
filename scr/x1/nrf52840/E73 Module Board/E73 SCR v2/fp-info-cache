@@ -1,4 +1,4 @@
-3485842115766053
+3489038700718342
 BVH_Components_Misc
 PAW3204
 
@@ -49,12 +49,47 @@ SMD_Speaker
 4
 2
 BVH_Connectors_Misc
+FPC_0.5mm_14
+
+
+0
+16
+15
+BVH_Connectors_Misc
+FPC_0.5mm_24
+
+
+0
+14
+14
+BVH_Connectors_Misc
 Molex_0855055002_RJ-45_Jack_Shielded_Yaesu_Numbering
 
 
 0
 10
 9
+BVH_Connectors_Misc
+Molex_WM10984CT-ND
+
+
+0
+14
+11
+BVH_Connectors_Misc
+Omron_XF3M_6_Pins
+
+
+0
+8
+6
+BVH_Connectors_Misc
+Omron_XF3M_12_6_Pin_Combo
+
+
+0
+15
+12
 BVH_Connectors_Misc
 SJ-43515RS-SMT-TR
 https://www.cuidevices.com/product/resource/sj-4351x-smt.pdf
@@ -69,34 +104,6 @@ https://www.cuidevices.com/product/resource/sj-4351x-smt.pdf
 0
 6
 6
-BVH_Connectors_RF_Ham
-SMA_THT_90deg
-
-sma tht
-0
-5
-2
-BVH_FPC_Connectors
-FPC_0.5mm_14
-
-
-0
-16
-15
-BVH_FPC_Connectors
-FPC_0.5mm_24
-
-
-0
-14
-14
-BVH_FPC_Connectors
-Molex_WM10984CT-ND
-
-
-0
-14
-11
 BVH_Features
 CP_Radial_Horizontal_D13.0mm_P7.50mm
 CP, Radial series, Radial, pin pitch=7.50mm, , diameter=13mm, Electrolytic Capacitor
@@ -125,6 +132,20 @@ SkyIron_logo_Back
 0
 0
 0
+BVH_NRF52_Modules
+E73(2G4M08S1C)
+
+
+0
+43
+43
+BVH_NRF52_Modules
+E73(2G4M08S1C)-HandSoldered
+
+
+0
+43
+43
 BVH_Power
 5.5mm_Barrel_Jack
 
@@ -146,6 +167,13 @@ DRV818V
 0
 18
 18
+BVH_RF_Ham
+SMA_THT_90deg
+
+sma tht
+0
+5
+2
 BVH_Switches
 5_Way_Tac_Switch_SMD
 https://www.sunrom.com/media/content/838/dim.gif
@@ -237,34 +265,20 @@ XBOX-JOYSTICK
 0
 14
 9
-BVH_Voltage Regulators
+BVH_Voltage_Regulators
 SOT-23-5
 5-pin SOT25 package
 SOT-25
 0
 5
 5
-BVH_Voltage Regulators
+BVH_Voltage_Regulators
 SwitchingRegulator_Selectable
 
 
 0
 4
 4
-BVH_nrf52_Modules
-E73(2G4M08S1C)
-
-
-0
-43
-43
-BVH_nrf52_Modules
-E73(2G4M08S1C)-HandSoldered
-
-
-0
-43
-43
 Battery_Holders
 Bulgin_BX0036_1xC
 

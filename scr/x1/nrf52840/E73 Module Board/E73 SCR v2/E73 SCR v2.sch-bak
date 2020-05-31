@@ -826,4 +826,21 @@ Wire Notes Line
 	7050 5350 5800 5350
 Text Notes 9550 3950 0    50   ~ 0
 Digital only
+NoConn ~ 6500 1450
+Text GLabel 6500 2450 2    50   Input ~ 0
+P0_26
+Text GLabel 6500 2550 2    50   Input ~ 0
+P0_06
+Text GLabel 6500 3450 2    50   Input ~ 0
+P0_20
+Text GLabel 7100 2450 2    50   Input ~ 0
+P0_26
+Text GLabel 7100 2550 2    50   Input ~ 0
+P0_06
+Text GLabel 7100 2650 2    50   Input ~ 0
+P0_20
+Text GLabel 6500 3550 2    50   Input ~ 0
+P0_13
+Text GLabel 7100 2750 2    50   Input ~ 0
+P0_13
 $EndSCHEMATC
