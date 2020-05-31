@@ -62,6 +62,8 @@ bool SPITrackball::initialize() {
   NRF_LOG_INFO("Initialize 1");
   NRF_LOG_FLUSH();
 
+  nrf_gpio_pin_port_decode(&csPin);
+
   nrfx_spim_xfer_desc_t xfer_desc = NRFX_SPIM_XFER_TRX(transmitBuffer, sizeof(transmitBuffer), receiveBuffer, sizeof(receiveBuffer));
 
   nrfx_spim_config_t spi_config = NRFX_SPIM_DEFAULT_CONFIG;

@@ -27,7 +27,7 @@ public:
 private:
   bool initialized;
   uint8_t pollInProcess;
-  uint8_t csPin;
+  uint32_t csPin;
 
   int8_t xDelta;
   int8_t yDelta;
