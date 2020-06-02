@@ -645,28 +645,28 @@ Text GLabel 9100 2350 0    50   Input ~ 0
 P0.05_A3
 Text GLabel 6500 2950 2    50   Input ~ 0
 P.04_A2
-Text GLabel 9050 3200 0    50   Input ~ 0
+Text GLabel 9600 4150 2    50   Input ~ 0
 P.04_A2
 Text GLabel 6500 2750 2    50   Input ~ 0
 P0.08
-Text GLabel 9100 2250 0    50   Input ~ 0
+Text GLabel 9600 4250 2    50   Input ~ 0
 P0.08
 Text GLabel 6500 2850 2    50   Input ~ 0
 P1.09
-Text GLabel 9100 2150 0    50   Input ~ 0
+Text GLabel 8950 4250 0    50   Input ~ 0
 P1.09
 Text GLabel 6500 3950 2    50   Input ~ 0
 P1.02
 Text GLabel 6500 3850 2    50   Input ~ 0
 P1.00
-Text GLabel 8950 4350 0    50   Input ~ 0
+Text GLabel 9050 2900 0    50   Input ~ 0
 P1.00
-Text GLabel 9600 4250 2    50   Input ~ 0
+Text GLabel 9100 2250 0    50   Input ~ 0
 P1.02
-Text GLabel 6500 3750 2    50   Input ~ 0
-P0.24
-Text GLabel 8950 4250 0    50   Input ~ 0
-P0.24
+Text GLabel 6500 3350 2    50   Input ~ 0
+P0.17
+Text GLabel 9050 3200 0    50   Input ~ 0
+P0.17
 NoConn ~ 6500 4050
 Text Notes 9550 2450 0    50   ~ 0
 Analog Joystick\nbreakout
@@ -674,17 +674,15 @@ Text GLabel 6500 3050 2    50   Input ~ 0
 P0.12
 Text GLabel 6500 3150 2    50   Input ~ 0
 P0.07
-Text GLabel 6500 3250 2    50   Input ~ 0
-P0.15
-Text GLabel 9050 3100 0    50   Input ~ 0
+Text GLabel 8950 4150 0    50   Input ~ 0
 P0.12
-Text GLabel 9050 3000 0    50   Input ~ 0
+Text GLabel 9600 4050 2    50   Input ~ 0
 P0.07
-Text GLabel 9050 2900 0    50   Input ~ 0
+Text GLabel 8950 4050 0    50   Input ~ 0
 P0.15
 Text GLabel 6500 3650 2    50   Input ~ 0
 P0.22
-Text GLabel 9600 4350 2    50   Input ~ 0
+Text GLabel 9050 3000 0    50   Input ~ 0
 P0.22
 Text Notes 9550 3200 0    50   ~ 0
 Single analog input
@@ -705,8 +703,6 @@ F 3 "~" H 6540 5850 50  0001 C CNN
 	1    6550 5900
 	1    0    0    -1  
 $EndComp
-Text GLabel 6500 3350 2    50   Input ~ 0
-SPKR
 Text GLabel 6150 5900 0    50   Input ~ 0
 SPKR
 $Comp
@@ -821,15 +817,15 @@ Text GLabel 6500 2550 2    50   Input ~ 0
 P0.06
 Text GLabel 6500 3450 2    50   Input ~ 0
 P0.20
-Text GLabel 9600 4150 2    50   Input ~ 0
+Text GLabel 9600 4350 2    50   Input ~ 0
 P0.26
-Text GLabel 8950 4150 0    50   Input ~ 0
+Text GLabel 8950 4350 0    50   Input ~ 0
 P0.06
-Text GLabel 9600 4050 2    50   Input ~ 0
+Text GLabel 9050 3100 0    50   Input ~ 0
 P0.20
 Text GLabel 6500 3550 2    50   Input ~ 0
 P0.13
-Text GLabel 8950 4050 0    50   Input ~ 0
+Text GLabel 9100 2150 0    50   Input ~ 0
 P0.13
 Wire Notes Line
 	10400 1750 10400 5000
@@ -855,4 +851,8 @@ Wire Wire Line
 	9500 4150 9600 4150
 Wire Wire Line
 	9500 4050 9600 4050
+Text GLabel 6500 3250 2    50   Input ~ 0
+P0.15
+Text GLabel 6500 3750 2    50   Input ~ 0
+SPKR
 $EndSCHEMATC

@@ -354,19 +354,6 @@ F 3 "~" H 7500 3100 50  0001 C CNN
 	1    7500 3100
 	0    1    1    0   
 $EndComp
-$Comp
-L Device:LED D?
-U 1 1 5CC5E4C7
-P 7800 3100
-AR Path="/5CC5E4C7" Ref="D?"  Part="1" 
-AR Path="/5CC5C4D3/5CC5E4C7" Ref="D4"  Part="1" 
-F 0 "D4" H 7800 3000 50  0000 C CNN
-F 1 "CHG" H 7791 3225 50  0000 C CNN
-F 2 "LEDs:LED_0805_HandSoldering" H 7800 3100 50  0001 C CNN
-F 3 "~" H 7800 3100 50  0001 C CNN
-	1    7800 3100
-	1    0    0    -1  
-$EndComp
 Wire Wire Line
 	7950 3100 8000 3100
 Text Notes 6150 3700 0    50   ~ 0
@@ -413,4 +400,17 @@ Wire Wire Line
 Connection ~ 3150 3450
 Wire Wire Line
 	3450 3000 4050 3000
+$Comp
+L Device:LED D?
+U 1 1 5CC5E4C7
+P 7800 3100
+AR Path="/5CC5E4C7" Ref="D?"  Part="1" 
+AR Path="/5CC5C4D3/5CC5E4C7" Ref="D4"  Part="1" 
+F 0 "D4" H 7800 3000 50  0000 C CNN
+F 1 "CHG" H 7791 3225 50  0000 C CNN
+F 2 "LEDs:LED_0805_HandSoldering" H 7800 3100 50  0001 C CNN
+F 3 "~" H 7800 3100 50  0001 C CNN
+	1    7800 3100
+	1    0    0    -1  
+$EndComp
 $EndSCHEMATC
