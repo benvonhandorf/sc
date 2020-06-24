@@ -446,4 +446,6 @@ Wire Wire Line
 	6850 3700 6850 3850
 Text Notes 6850 4600 2    50   ~ 0
 Level shifting
+Text Notes 4800 5050 0    50   ~ 0
+This design implies pull-up resistors on the high side already, \neither internal to the MCU pins or elsewhere.
 $EndSCHEMATC
