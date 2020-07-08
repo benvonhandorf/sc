@@ -659,13 +659,13 @@ Text GLabel 6500 3950 2    50   Input ~ 0
 P1.02
 Text GLabel 6500 3850 2    50   Input ~ 0
 P1.00
-Text GLabel 10300 4100 0    50   Input ~ 0
+Text GLabel 9050 2900 0    50   Input ~ 0
 P1.00
-Text GLabel 10050 4200 2    50   Input ~ 0
+Text GLabel 9100 2250 0    50   Input ~ 0
 P1.02
 Text GLabel 6500 3350 2    50   Input ~ 0
 P0.17
-Text GLabel 8550 3650 0    50   Input ~ 0
+Text GLabel 9050 3200 0    50   Input ~ 0
 P0.17
 NoConn ~ 6500 4050
 Text Notes 9550 2450 0    50   ~ 0
@@ -682,7 +682,7 @@ Text GLabel 8950 4050 0    50   Input ~ 0
 P0.15
 Text GLabel 6500 3650 2    50   Input ~ 0
 P0.22
-Text GLabel 10050 4000 2    50   Input ~ 0
+Text GLabel 9050 3000 0    50   Input ~ 0
 P0.22
 Text Notes 9550 3200 0    50   ~ 0
 Single analog input
@@ -821,11 +821,11 @@ Text GLabel 9600 4350 2    50   Input ~ 0
 P0.26
 Text GLabel 8950 4350 0    50   Input ~ 0
 P0.06
-Text GLabel 10000 3800 2    50   Input ~ 0
+Text GLabel 9050 3100 0    50   Input ~ 0
 P0.20
 Text GLabel 6500 3550 2    50   Input ~ 0
 P0.13
-Text GLabel 10250 3650 0    50   Input ~ 0
+Text GLabel 9100 2150 0    50   Input ~ 0
 P0.13
 Wire Notes Line
 	10400 1750 10400 5000
