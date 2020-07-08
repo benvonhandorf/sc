@@ -88,8 +88,11 @@
 #include "nrf_log_ctrl.h"
 #include "nrf_log_default_backends.h"
 #include "nrfx_gpiote.h"
+#include <nrfx_wdt.h>
 
 #include "peripherals/m570/SPITrackball.h"
+#include "peripherals/button/LatchingButton.h"
+#include "peripherals/battery/battery_adc.h"
 
 #define DEVICE_NAME "CRAP v2"                   /**< Name of device. Will be included in the advertising data. */
 #define MANUFACTURER_NAME "NordicSemiconductor" /**< Manufacturer. Will be passed to Device Information Service. */
@@ -97,9 +100,7 @@
 #define APP_BLE_OBSERVER_PRIO 3 /**< Application's BLE observer priority. You shouldn't need to modify this value. */
 #define APP_BLE_CONN_CFG_TAG 1  /**< A tag identifying the SoftDevice BLE configuration. */
 
-#define BATTERY_LEVEL_MEAS_INTERVAL APP_TIMER_TICKS(2000) /**< Battery level measurement interval (ticks). */
-#define MIN_BATTERY_LEVEL 81                              /**< Minimum simulated battery level. */
-#define MAX_BATTERY_LEVEL 100                             /**< Maximum simulated battery level. */
+#define BATTERY_LEVEL_MEAS_INTERVAL APP_TIMER_TICKS(10000) /**< Battery level measurement interval (ticks). */
 #define BATTERY_LEVEL_INCREMENT 1                         /**< Increment between each simulated battery level measurement. */
 
 #define PNP_ID_VENDOR_ID_SOURCE 0x02  /**< Vendor ID Source. */
@@ -152,7 +153,7 @@
 #ifdef SVCALL_AS_NORMAL_FUNCTION
 #define SCHED_QUEUE_SIZE 20 /**< Maximum number of events in the scheduler queue. More is needed in case of Serialization. */
 #else
-#define SCHED_QUEUE_SIZE 10 /**< Maximum number of events in the scheduler queue. */
+#define SCHED_QUEUE_SIZE 20 /**< Maximum number of events in the scheduler queue. */
 #endif
 
 #define DEAD_BEEF 0xDEADBEEF /**< Value used as error code on stack dump, can be used to identify stack location on stack unwind. */
@@ -174,15 +175,13 @@ NRF_BLE_GATT_DEF(m_gatt);           /**< GATT module instance. */
 NRF_BLE_QWR_DEF(m_qwr);             /**< Context for the Queued Write module.*/
 BLE_ADVERTISING_DEF(m_advertising); /**< Advertising module instance. */
 
-#define IDLE_POLL_INTERVAL APP_TIMER_TICKS(10) /**< Battery level measurement interval (ticks). */
+#define IDLE_POLL_INTERVAL APP_TIMER_TICKS(20) /**< Battery level measurement interval (ticks). */
 
 APP_TIMER_DEF(m_poll_timer); /**< Poll from idle timer. */
 
 static bool m_in_boot_mode = false;                      /**< Current protocol mode. */
 static uint16_t m_conn_handle = BLE_CONN_HANDLE_INVALID; /**< Handle of the current connection. */
 static pm_peer_id_t m_peer_id;                           /**< Device reference handle to the current bonded central. */
-static sensorsim_cfg_t m_battery_sim_cfg;                /**< Battery Level sensor simulator configuration. */
-static sensorsim_state_t m_battery_sim_state;            /**< Battery Level sensor simulator state. */
 static ble_uuid_t m_adv_uuids[] =                        /**< Universally unique service identifiers. */
     {
         {BLE_UUID_HUMAN_INTERFACE_DEVICE_SERVICE, BLE_UUID_TYPE_BLE}};
@@ -202,6 +201,8 @@ static ble_advdata_manuf_data_t m_sp_manuf_advdata = /**< Advertising data struc
                 .p_data = &m_sp_payload[0]}};
 static ble_advdata_t m_sp_advdata;
 #endif
+
+BatteryAdc *batteryAdc = NULL;
 
 static void on_hids_evt(ble_hids_t *p_hids, ble_hids_evt_t *p_evt);
 
@@ -327,13 +328,13 @@ static void ble_advertising_error_handler(uint32_t nrf_error) {
 
 /**@brief Function for performing a battery measurement, and update the Battery Level characteristic in the Battery Service.
  */
-static void battery_level_update(void) {
+static void battery_level_update(uint8_t battery_percentage) {
   ret_code_t err_code;
-  uint8_t battery_level;
 
-  battery_level = (uint8_t)sensorsim_measure(&m_battery_sim_state, &m_battery_sim_cfg);
+  NRF_LOG_INFO("Battery level: %d", battery_percentage);
 
-  err_code = ble_bas_battery_level_update(&m_bas, battery_level, BLE_CONN_HANDLE_ALL);
+  err_code = ble_bas_battery_level_update(&m_bas, battery_percentage, BLE_CONN_HANDLE_ALL);
+
   if ((err_code != NRF_SUCCESS) &&
       (err_code != NRF_ERROR_BUSY) &&
       (err_code != NRF_ERROR_RESOURCES) &&
@@ -353,7 +354,10 @@ static void battery_level_update(void) {
  */
 static void battery_level_meas_timeout_handler(void *p_context) {
   UNUSED_PARAMETER(p_context);
-  battery_level_update();
+  NRF_LOG_INFO("Requesting battery update");
+  if(batteryAdc != NULL) {
+    batteryAdc->sample();
+  }
 }
 
 static void poll_from_idle_handler(void *p_context) {
@@ -651,17 +655,6 @@ static void services_init(void) {
   dis_init();
   bas_init();
   hids_init();
-}
-
-/**@brief Function for initializing the battery sensor simulator.
- */
-static void sensor_simulator_init(void) {
-  m_battery_sim_cfg.min = MIN_BATTERY_LEVEL;
-  m_battery_sim_cfg.max = MAX_BATTERY_LEVEL;
-  m_battery_sim_cfg.incr = BATTERY_LEVEL_INCREMENT;
-  m_battery_sim_cfg.start_at_max = true;
-
-  sensorsim_init(&m_battery_sim_state, &m_battery_sim_cfg);
 }
 
 /**@brief Function for handling a Connection Parameters error.
@@ -1000,52 +993,125 @@ static void scheduler_init(void) {
  * @param[in]   x_delta   Horizontal movement.
  * @param[in]   y_delta   Vertical movement.
  */
-static void mouse_movement_send(int16_t x_delta, int16_t y_delta) {
+static void boot_mouse_send(int16_t x_delta, int16_t y_delta, uint8_t leftClick, uint8_t middleClick, uint8_t rightClick) {
   ret_code_t err_code;
 
   if (m_in_boot_mode) {
     x_delta = MIN(x_delta, 0x00ff);
     y_delta = MIN(y_delta, 0x00ff);
 
+    uint8_t buttons = 0 |
+                leftClick << 0 |
+                rightClick << 1 |
+                middleClick << 2;
+
     err_code = ble_hids_boot_mouse_inp_rep_send(&m_hids,
-        0x00,
+        buttons,
         (int8_t)x_delta,
         (int8_t)y_delta,
         0,
         NULL,
         m_conn_handle);
-  } else {
-    uint8_t buffer[INPUT_REP_MOVEMENT_LEN];
 
-    APP_ERROR_CHECK_BOOL(INPUT_REP_MOVEMENT_LEN == 3);
-
-    x_delta = MIN(x_delta, 0x0fff);
-    y_delta = MIN(y_delta, 0x0fff);
-
-    buffer[0] = x_delta & 0x00ff;
-    buffer[1] = ((y_delta & 0x000f) << 4) | ((x_delta & 0x0f00) >> 8);
-    buffer[2] = (y_delta & 0x0ff0) >> 4;
-
-    err_code = ble_hids_inp_rep_send(&m_hids,
-        INPUT_REP_MOVEMENT_INDEX,
-        INPUT_REP_MOVEMENT_LEN,
-        buffer,
-        m_conn_handle);
+    if ((err_code != NRF_SUCCESS) &&
+        (err_code != NRF_ERROR_INVALID_STATE) &&
+        (err_code != NRF_ERROR_RESOURCES) &&
+        (err_code != NRF_ERROR_BUSY) &&
+        (err_code != BLE_ERROR_GATTS_SYS_ATTR_MISSING) &&
+        (err_code != NRF_ERROR_FORBIDDEN)) {
+      APP_ERROR_HANDLER(err_code);
+    }
   }
+}
+   
+static void mouse_movement_send(int16_t x_delta, int16_t y_delta) {
+  ret_code_t err_code;
+
+  if (m_in_boot_mode) {
+    return ;
+  }
+  
+  uint8_t buffer[INPUT_REP_MOVEMENT_LEN];
+
+  APP_ERROR_CHECK_BOOL(INPUT_REP_MOVEMENT_LEN == 3);
+
+  x_delta = MIN(x_delta, 0x0fff);
+  y_delta = MIN(y_delta, 0x0fff);
+
+  buffer[0] = x_delta & 0x00ff;
+  buffer[1] = ((y_delta & 0x000f) << 4) | ((x_delta & 0x0f00) >> 8);
+  buffer[2] = (y_delta & 0x0ff0) >> 4;
+
+  err_code = ble_hids_inp_rep_send(&m_hids,
+      INPUT_REP_MOVEMENT_INDEX,
+      INPUT_REP_MOVEMENT_LEN,
+      buffer,
+      m_conn_handle);
 
   if ((err_code != NRF_SUCCESS) &&
       (err_code != NRF_ERROR_INVALID_STATE) &&
       (err_code != NRF_ERROR_RESOURCES) &&
       (err_code != NRF_ERROR_BUSY) &&
-      (err_code != BLE_ERROR_GATTS_SYS_ATTR_MISSING)) {
+      (err_code != BLE_ERROR_GATTS_SYS_ATTR_MISSING) &&
+      (err_code != NRF_ERROR_FORBIDDEN)) {
     APP_ERROR_HANDLER(err_code);
   }
+}
+
+static void mouse_button_send( uint8_t leftClick, uint8_t middleClick, uint8_t rightClick) {
+  ret_code_t err_code;
+
+  if (m_in_boot_mode) {
+    return ;
+  }
+  
+  uint8_t buffer[1];
+
+  APP_ERROR_CHECK_BOOL(INPUT_REP_BUTTONS_LEN == 3);
+
+  uint8_t buttons = 0 |
+        leftClick << 0 |
+        rightClick << 1 |
+        middleClick << 2;
+
+  err_code = ble_hids_inp_rep_send(&m_hids,
+      INPUT_REP_BUTTONS_INDEX,
+      1,
+      &buttons,
+      m_conn_handle);
+
+  if ((err_code != NRF_SUCCESS) &&
+      (err_code != NRF_ERROR_INVALID_STATE) &&
+      (err_code != NRF_ERROR_RESOURCES) &&
+      (err_code != NRF_ERROR_BUSY) &&
+      (err_code != BLE_ERROR_GATTS_SYS_ATTR_MISSING) &&
+      (err_code != NRF_ERROR_FORBIDDEN)) {
+    APP_ERROR_HANDLER(err_code);
+  }
+}
+
+/**@brief Timer value function that handles wrap around on the app timer.  Assumes
+method will be called at least once during each RTC wraparound interval.
+*/
+uint32_t get_timer_compensated() {
+  static uint32_t lastTimer = 0UL;
+  static uint32_t offset = 0UL;
+
+  uint32_t newValue = app_timer_cnt_get();
+
+  if(newValue < lastTimer) {
+    offset += APP_TIMER_MAX_CNT_VAL + 1;
+  }
+
+  lastTimer = newValue;
+
+  return newValue + offset;
 }
 
 /**@brief Function for initializing the nrf log module.
  */
 static void log_init(void) {
-  ret_code_t err_code = NRF_LOG_INIT(&app_timer_cnt_get);
+  ret_code_t err_code = NRF_LOG_INIT(&get_timer_compensated);
   APP_ERROR_CHECK(err_code);
 
   NRF_LOG_DEFAULT_BACKENDS_INIT();
@@ -1070,15 +1136,37 @@ static void idle_state_handle(void) {
   }
 }
 
+nrfx_wdt_channel_id wdt_channel_id;
+
+void wdt_event_handler(void) {
+  //Watchdog has expired.  We get 2 32k/s oscillator cycles to wrap things up before reset
+  NRF_LOG_ERROR("Watchdog");
+  NRF_LOG_FLUSH();
+}
+
+
 /**@brief Function for application main entry.
  */
 int main(void) {
+  ret_code_t err_code;
   SPITrackball *trackball = new SPITrackball(SPI_SS);
   bool erase_bonds;
 
   // Initialize.
   log_init();
   timers_init();
+
+  //Configure WDT.
+  nrfx_wdt_config_t config = NRFX_WDT_DEAFULT_CONFIG;
+  err_code = nrfx_wdt_init(&config, wdt_event_handler);
+  APP_ERROR_CHECK(err_code);
+  err_code = nrfx_wdt_channel_alloc(&wdt_channel_id);
+  APP_ERROR_CHECK(err_code);
+  nrfx_wdt_enable();
+
+  //Pin 3 used as a GND for a pin 2 logging UART
+  nrf_gpio_cfg_output(3);
+  nrf_gpio_pin_clear(3);
 
   nrf_gpio_cfg_output(LED_1);
   nrf_gpio_pin_set(LED_1);
@@ -1090,39 +1178,75 @@ int main(void) {
   gatt_init();
   advertising_init();
   services_init();
-  sensor_simulator_init();
   conn_params_init();
   peer_manager_init();
 
-  trackball->initialize();
+  batteryAdc = new BatteryAdc(NRF_SAADC_INPUT_AIN4, battery_level_update);
 
   // Start execution.
   NRF_LOG_INFO("Initialization complete.");
   timers_start();
   advertising_start(erase_bonds);
 
+  trackball->initialize();
+  LatchingButton *left = new LatchingButton(31);
+
+  LatchingButton *right = new LatchingButton(29);
+
   // Enter main loop.
   while (true) {
     if (trackball->transferInProcess()) {
       app_sched_execute();
     } else {
+      nrfx_wdt_feed();
+
       if (trackball->pollResults()) {
         int8_t deltaX = trackball->getX();
         int8_t deltaY = trackball->getY();
+        
+        bool leftDirty = left->isDirty();
+        bool rightDirty = right->isDirty();
+        bool buttonsDirty = leftDirty || rightDirty ;
 
-        if (deltaX != 0 || deltaY != 0) {
-          NRF_LOG_INFO("Trackball reports %d, %d", deltaX, deltaY);
+        if(m_in_boot_mode) {
+          if (deltaX != 0 || deltaY != 0 || buttonsDirty) {
+            uint8_t leftButtonValue = left->isPressed();
+            uint8_t rightButtonValue = right->isPressed();
 
-          mouse_movement_send(deltaX, deltaY);
+            boot_mouse_send(deltaX, deltaY, leftButtonValue, 0, rightButtonValue);
 
-          trackball->poll();
+            NRF_LOG_INFO("Boot mode send: %d, %d - %d:%d", deltaX, deltaY, leftButtonValue, rightButtonValue);
+
+            trackball->poll();
+          }
         } else {
-          //Timer and power sleep mode
+          if(buttonsDirty) {
+            uint8_t leftButtonValue = left->isPressed();
+            uint8_t rightButtonValue = right->isPressed();
+            
+            mouse_button_send(leftButtonValue, 0, rightButtonValue);
+
+            NRF_LOG_INFO("Button send: %d:%d - %d, %d", leftButtonValue, rightButtonValue, leftDirty, rightDirty);
+          }
+
+          if (deltaX != 0 || deltaY != 0) {
+            mouse_movement_send(deltaX, deltaY);
+
+            NRF_LOG_INFO("Movement send: %d, %d", deltaX, deltaY);
+
+            trackball->poll();
+          }
+        }
+
+        NRF_LOG_FLUSH();
+      
+        if(!buttonsDirty && deltaX == 0 && deltaY == 0){
           ret_code_t err_code = app_timer_start(m_poll_timer, IDLE_POLL_INTERVAL, trackball);
           APP_ERROR_CHECK(err_code);
 
           idle_state_handle();
         }
+
       } else {
         trackball->poll();
       }

@@ -855,4 +855,7 @@ Text GLabel 6500 3250 2    50   Input ~ 0
 P0.15
 Text GLabel 6500 3750 2    50   Input ~ 0
 SPKR
+NoConn ~ 6500 1950
+NoConn ~ 6500 2050
+NoConn ~ 6500 2150
 $EndSCHEMATC

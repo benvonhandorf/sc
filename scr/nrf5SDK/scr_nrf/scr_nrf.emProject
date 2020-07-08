@@ -94,6 +94,8 @@
       <file file_name="$(NRF_SDK)/modules/nrfx/drivers/src/nrfx_spim.c">
         <configuration Name="Debug" build_exclude_from_build="No" />
       </file>
+      <file file_name="../../../../../tools/nrf/nRF5SDK160098a08e2/modules/nrfx/drivers/src/nrfx_wdt.c" />
+      <file file_name="../../../../../tools/nrf/nRF5SDK160098a08e2/modules/nrfx/drivers/src/nrfx_saadc.c" />
     </folder>
     <folder Name="Board Support">
       <file file_name="$(NRF_SDK)/components/libraries/bsp/bsp.c" />
@@ -107,6 +109,14 @@
           <file file_name="peripherals/m570/poll.h" />
           <file file_name="peripherals/m570/SPITrackball.cpp" />
           <file file_name="peripherals/m570/SPITrackball.h" />
+        </folder>
+        <folder Name="button">
+          <file file_name="peripherals/button/LatchingButton.h" />
+          <file file_name="peripherals/button/LatchingButton.cpp" />
+        </folder>
+        <folder Name="battery">
+          <file file_name="peripherals/battery/battery_adc.h" />
+          <file file_name="peripherals/battery/battery_adc.cpp" />
         </folder>
       </folder>
       <file file_name="config/sdk_config.h" />
@@ -151,6 +161,10 @@
       <file file_name="$(NRF_SDK)/components/softdevice/common/nrf_sdh_ble.c" />
       <file file_name="$(NRF_SDK)/components/softdevice/common/nrf_sdh_soc.c" />
     </folder>
+    <configuration
+      Name="Debug"
+      gcc_c_language_standard="gnu11"
+      gcc_cplusplus_language_standard="gnu++17" />
   </project>
   <configuration
     Name="Release"
@@ -160,4 +174,5 @@
     Name="Debug"
     c_preprocessor_definitions="DEBUG; DEBUG_NRF"
     gcc_optimization_level="None" />
+  <import file_name="../../../../../tools/nrf/nRF5SDK160098a08e2/examples/peripheral/saadc/pca10040e/blank/ses/saadc_pca10040e.emProject" />
 </solution>
