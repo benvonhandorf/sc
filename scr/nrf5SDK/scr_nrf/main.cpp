@@ -245,6 +245,8 @@ static void whitelist_set(pm_peer_id_list_skip_t skip) {
  * @param[in] skip  Filter passed to @ref pm_peer_id_list.
  */
 static void identities_set(pm_peer_id_list_skip_t skip) {
+  NRF_LOG_INFO("identities_set");
+
   pm_peer_id_t peer_ids[BLE_GAP_DEVICE_IDENTITIES_MAX_COUNT];
   uint32_t peer_id_count = BLE_GAP_DEVICE_IDENTITIES_MAX_COUNT;
 
@@ -1150,7 +1152,7 @@ void wdt_event_handler(void) {
 int main(void) {
   ret_code_t err_code;
   SPITrackball *trackball = new SPITrackball(SPI_SS);
-  bool erase_bonds;
+  bool erase_bonds = false;
 
   // Initialize.
   log_init();
