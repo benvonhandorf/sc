@@ -24,10 +24,10 @@ void saadc_event_handler(nrfx_saadc_evt_t const * p_event) {
       APP_ERROR_CHECK(-1);
     } else {
       //Circuit board has a 100k/100k voltage divider on the battery line with the ADC sample at the halfway point.  
-      //Peak expected voltage = 4.5/2 == 2.25
+      //Peak expected voltage = 4.5/2 == 2.25, LDO cutout at 3.3V
       //ADC configured with the 1/4 VDD (3.3V) reference and 1/4 gain, so full scale == 3.3.
-      //Thus full scale should be 68.1% == 172/255.  Converting this to a straight percentage ~*0.6
-      percentage = (uint8_t) (p_event->data.done.p_buffer[0] * 0.6);
+      //Thus full scale should be 68.1% == 172/255, LDO cutout ~130.
+      percentage = (uint8_t) ((p_event->data.done.p_buffer[0] - 130) * 2.4);
 
       app_sched_event_put(NULL, 0, post_event_handler);
     }
