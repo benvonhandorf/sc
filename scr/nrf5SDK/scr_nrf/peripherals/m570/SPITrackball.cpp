@@ -67,8 +67,8 @@ bool SPITrackball::initialize() {
   nrfx_spim_config_t spi_config = NRFX_SPIM_DEFAULT_CONFIG;
   spi_config.frequency      = NRF_SPIM_FREQ_125K;
   spi_config.ss_pin         = this->csPin;
-  spi_config.miso_pin       = SPI_MISO;
-  spi_config.mosi_pin       = SPI_MOSI;
+  spi_config.miso_pin       = SPI_COPI;
+  spi_config.mosi_pin       = SPI_CIPO;
   spi_config.sck_pin        = SPI_SCK;
   spi_config.use_hw_ss      = false;
   spi_config.ss_active_high = false;

@@ -46,6 +46,10 @@ extern "C" {
 
 #include "nrf_gpio.h"
 
+#define SCR_BOARD_VERSION 2
+
+#if SCR_BOARD_VERSION == 1
+
 // LEDs definitions for E73_SCR_V1
 #define LEDS_NUMBER    1
 
@@ -60,26 +64,97 @@ extern "C" {
 
 #define BSP_LED_0      LED_1
 
+#define J5_3    NRF_GPIO_PIN_MAP(0,30)
+#define J5_4    NRF_GPIO_PIN_MAP(0,5)
+#define J5_5    NRF_GPIO_PIN_MAP(1,11)
+#define J5_6    NRF_GPIO_PIN_MAP(1,9)
+
+#define J6_3    NRF_GPIO_PIN_MAP(0,31)
+#define J6_4    NRF_GPIO_PIN_MAP(0,29)
+#define J6_5    NRF_GPIO_PIN_MAP(0,2)
+#define J6_6    NRF_GPIO_PIN_MAP(0,03)
+
 #define BUTTONS_NUMBER 2
 
-#define BUTTON_1       NRF_GPIO_PIN_MAP(0,31)
-#define BUTTON_2       NRF_GPIO_PIN_MAP(0,29)
+#define BUTTON_1       J6_3
+#define BUTTON_2       J6_4
 #define BUTTON_PULL    NRF_GPIO_PIN_PULLUP
 
 #define BUTTONS_ACTIVE_STATE 0
 
 #define BUTTONS_LIST { BUTTON_1, BUTTON_2 }
 
-//#define BSP_BUTTON_0   BUTTON_1
-//#define BSP_BUTTON_1   BUTTON_2
 
-#define UART_RX_PIN_NUMBER  NRF_GPIO_PIN_MAP(0,3)
-#define UART_TX_PIN_NUMBER  NRF_GPIO_PIN_MAP(0,2)
+#define UART_GND  J6_6
+#define UART_TX_PIN_NUMBER  J6_5
 
-#define SPI_MOSI  NRF_GPIO_PIN_MAP(0,5)
-#define SPI_MISO  NRF_GPIO_PIN_MAP(1,11)
-#define SPI_SCK   NRF_GPIO_PIN_MAP(1,9)
-#define SPI_SS    NRF_GPIO_PIN_MAP(0,30)
+#define SPI_COPI  J5_4
+#define SPI_CIPO  J5_5
+#define SPI_SCK   J5_6
+#define SPI_CS    J5_3
+
+#elif SCR_BOARD_VERSION==2
+
+// LEDs definitions for E73_SCR_V2
+#define LEDS_NUMBER    1
+
+#define LED_1          NRF_GPIO_PIN_MAP(1,06)
+#define LED_R          NRF_GPIO_PIN_MAP(0,3)
+#define LED_G          NRF_GPIO_PIN_MAP(1,10)
+#define LED_B          NRF_GPIO_PIN_MAP(1,11)
+#define LED_START      LED_1
+
+#define LEDS_ACTIVE_STATE 1
+
+#define LEDS_LIST { LED_1 }
+
+#define LEDS_INV_MASK  LEDS_MASK
+
+#define BSP_LED_0      LED_1
+
+//For all peripheral connectors, Pin 1 = GND, Pin 2 = 3.3V
+//Closest to board edge away from USB.  
+#define J3_3    NRF_GPIO_PIN_MAP(0,28)
+#define J3_4    NRF_GPIO_PIN_MAP(0,5)
+#define J3_5    NRF_GPIO_PIN_MAP(1,2)
+#define J3_6    NRF_GPIO_PIN_MAP(0,13)
+
+#define J4_3    NRF_GPIO_PIN_MAP(0,17)
+#define J4_4    NRF_GPIO_PIN_MAP(0,20)
+#define J4_5    NRF_GPIO_PIN_MAP(0,22)
+#define J4_6    NRF_GPIO_PIN_MAP(1,00)
+
+//Closest to center of board 25
+#define J5_3    NRF_GPIO_PIN_MAP(0,26)
+#define J5_4    NRF_GPIO_PIN_MAP(0,6)
+#define J5_5    NRF_GPIO_PIN_MAP(0,8)
+#define J5_6    NRF_GPIO_PIN_MAP(1,9)
+#define J5_7    NRF_GPIO_PIN_MAP(0,4)
+#define J5_8    NRF_GPIO_PIN_MAP(0,12)
+#define J5_9    NRF_GPIO_PIN_MAP(0,7)
+#define J5_10    NRF_GPIO_PIN_MAP(0,15)
+
+#define BUTTONS_NUMBER 2
+
+#define BUTTON_1       J4_3
+#define BUTTON_2       J4_4
+#define BUTTON_PULL    NRF_GPIO_PIN_PULLUP
+
+#define BUTTONS_ACTIVE_STATE 0
+
+#define BUTTONS_LIST { BUTTON_1, BUTTON_2 }
+
+#define UART_GND  J4_6
+#define UART_TX_PIN_NUMBER  J4_5
+
+#define SPI_COPI  J3_4
+#define SPI_CIPO  J3_5
+#define SPI_SCK   J3_6
+#define SPI_CS    J3_3
+
+#define SPEAKER   NRF_GPIO_PIN_MAP(0,24)
+
+#endif
 
 #ifdef __cplusplus
 }

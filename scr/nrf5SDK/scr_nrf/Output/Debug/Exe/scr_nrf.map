@@ -4666,10 +4666,10 @@ Discarded input sections
  .debug_macro   0x0000000000000000       0x40 Output/scr_nrf Debug/Obj/boards.o
  .debug_macro   0x0000000000000000       0x20 Output/scr_nrf Debug/Obj/boards.o
  .debug_macro   0x0000000000000000       0x16 Output/scr_nrf Debug/Obj/boards.o
- .debug_macro   0x0000000000000000       0x7c Output/scr_nrf Debug/Obj/boards.o
+ .debug_macro   0x0000000000000000      0x10f Output/scr_nrf Debug/Obj/boards.o
  .debug_macro   0x0000000000000000      0x16d Output/scr_nrf Debug/Obj/boards.o
  .debug_line    0x0000000000000000      0xf73 Output/scr_nrf Debug/Obj/boards.o
- .debug_str     0x0000000000000000    0x8df31 Output/scr_nrf Debug/Obj/boards.o
+ .debug_str     0x0000000000000000    0x8e0de Output/scr_nrf Debug/Obj/boards.o
  .comment       0x0000000000000000       0x48 Output/scr_nrf Debug/Obj/boards.o
  .ARM.attributes
                 0x0000000000000000       0x39 Output/scr_nrf Debug/Obj/boards.o
@@ -7463,7 +7463,7 @@ Discarded input sections
  .debug_macro   0x0000000000000000       0x40 Output/scr_nrf Debug/Obj/bsp.o
  .debug_macro   0x0000000000000000       0x20 Output/scr_nrf Debug/Obj/bsp.o
  .debug_macro   0x0000000000000000       0x16 Output/scr_nrf Debug/Obj/bsp.o
- .debug_macro   0x0000000000000000       0x7c Output/scr_nrf Debug/Obj/bsp.o
+ .debug_macro   0x0000000000000000      0x10f Output/scr_nrf Debug/Obj/bsp.o
  .debug_macro   0x0000000000000000      0x16d Output/scr_nrf Debug/Obj/bsp.o
  .debug_macro   0x0000000000000000       0x1c Output/scr_nrf Debug/Obj/bsp.o
  .debug_macro   0x0000000000000000       0x37 Output/scr_nrf Debug/Obj/bsp.o
@@ -7848,7 +7848,7 @@ Discarded input sections
  .debug_macro   0x0000000000000000       0x40 Output/scr_nrf Debug/Obj/bsp_btn_ble.o
  .debug_macro   0x0000000000000000       0x20 Output/scr_nrf Debug/Obj/bsp_btn_ble.o
  .debug_macro   0x0000000000000000       0x16 Output/scr_nrf Debug/Obj/bsp_btn_ble.o
- .debug_macro   0x0000000000000000       0x7c Output/scr_nrf Debug/Obj/bsp_btn_ble.o
+ .debug_macro   0x0000000000000000      0x10f Output/scr_nrf Debug/Obj/bsp_btn_ble.o
  .debug_macro   0x0000000000000000      0x16d Output/scr_nrf Debug/Obj/bsp_btn_ble.o
  .debug_macro   0x0000000000000000       0x1c Output/scr_nrf Debug/Obj/bsp_btn_ble.o
  .debug_macro   0x0000000000000000       0x1c Output/scr_nrf Debug/Obj/bsp_btn_ble.o
@@ -8258,7 +8258,7 @@ Discarded input sections
  .debug_macro   0x0000000000000000       0x40 Output/scr_nrf Debug/Obj/main.o
  .debug_macro   0x0000000000000000       0x20 Output/scr_nrf Debug/Obj/main.o
  .debug_macro   0x0000000000000000       0x16 Output/scr_nrf Debug/Obj/main.o
- .debug_macro   0x0000000000000000       0x7c Output/scr_nrf Debug/Obj/main.o
+ .debug_macro   0x0000000000000000      0x10f Output/scr_nrf Debug/Obj/main.o
  .debug_macro   0x0000000000000000      0x16d Output/scr_nrf Debug/Obj/main.o
  .debug_macro   0x0000000000000000       0x1c Output/scr_nrf Debug/Obj/main.o
  .debug_macro   0x0000000000000000       0x37 Output/scr_nrf Debug/Obj/main.o
@@ -8507,7 +8507,7 @@ Discarded input sections
  .debug_macro   0x0000000000000000       0x5d Output/scr_nrf Debug/Obj/SPITrackball.o
  .debug_macro   0x0000000000000000       0x1c Output/scr_nrf Debug/Obj/SPITrackball.o
  .debug_macro   0x0000000000000000       0x10 Output/scr_nrf Debug/Obj/SPITrackball.o
- .debug_macro   0x0000000000000000       0x7c Output/scr_nrf Debug/Obj/SPITrackball.o
+ .debug_macro   0x0000000000000000      0x10f Output/scr_nrf Debug/Obj/SPITrackball.o
  .debug_macro   0x0000000000000000      0x16d Output/scr_nrf Debug/Obj/SPITrackball.o
  .debug_macro   0x0000000000000000       0x22 Output/scr_nrf Debug/Obj/SPITrackball.o
  .debug_macro   0x0000000000000000       0x5b Output/scr_nrf Debug/Obj/SPITrackball.o
@@ -24114,7 +24114,7 @@ OUTPUT(Output/Debug/Exe/scr_nrf.elf elf32-littlearm)
  .debug_aranges
                 0x000000000000b5a0      0x1b0 Output/scr_nrf Debug/Obj/nrf_sdh_soc.o
 
-.debug_str      0x0000000000000000    0xb73a6
+.debug_str      0x0000000000000000    0xb7553
  .debug_str     0x0000000000000000       0x82 Output/scr_nrf Debug/Obj/thumb_crt0.o
  .debug_str     0x0000000000000082    0x87fe5 Output/scr_nrf Debug/Obj/nrf_log_backend_serial.o
                                       0x8a84d (size before relaxing)
@@ -24198,67 +24198,67 @@ OUTPUT(Output/Debug/Exe/scr_nrf.elf elf32-littlearm)
                                       0x90a7c (size before relaxing)
  .debug_str     0x000000000009f52e     0x172d Output/scr_nrf Debug/Obj/nrfx_saadc.o
                                       0x91ef8 (size before relaxing)
- .debug_str     0x00000000000a0c5b     0x1a6e Output/scr_nrf Debug/Obj/bsp.o
-                                      0x8fc4d (size before relaxing)
- .debug_str     0x00000000000a26c9     0x7add Output/scr_nrf Debug/Obj/bsp_btn_ble.o
-                                      0x970e7 (size before relaxing)
- .debug_str     0x00000000000aa1a6     0x6fcb Output/scr_nrf Debug/Obj/main.o
-                                      0xa4d36 (size before relaxing)
- .debug_str     0x00000000000b1171      0x291 Output/scr_nrf Debug/Obj/SPITrackball.o
-                                      0x9391d (size before relaxing)
- .debug_str     0x00000000000b1402       0xc7 Output/scr_nrf Debug/Obj/LatchingButton.o
+ .debug_str     0x00000000000a0c5b     0x1c1b Output/scr_nrf Debug/Obj/bsp.o
+                                      0x8fdfa (size before relaxing)
+ .debug_str     0x00000000000a2876     0x7add Output/scr_nrf Debug/Obj/bsp_btn_ble.o
+                                      0x97294 (size before relaxing)
+ .debug_str     0x00000000000aa353     0x6fcb Output/scr_nrf Debug/Obj/main.o
+                                      0xa4ee3 (size before relaxing)
+ .debug_str     0x00000000000b131e      0x291 Output/scr_nrf Debug/Obj/SPITrackball.o
+                                      0x93aca (size before relaxing)
+ .debug_str     0x00000000000b15af       0xc7 Output/scr_nrf Debug/Obj/LatchingButton.o
                                       0x9153a (size before relaxing)
- .debug_str     0x00000000000b14c9      0x241 Output/scr_nrf Debug/Obj/battery_adc.o
+ .debug_str     0x00000000000b1676      0x241 Output/scr_nrf Debug/Obj/battery_adc.o
                                       0x91897 (size before relaxing)
- .debug_str     0x00000000000b170a      0x409 Output/scr_nrf Debug/Obj/ble_advdata.o
+ .debug_str     0x00000000000b18b7      0x409 Output/scr_nrf Debug/Obj/ble_advdata.o
                                       0x8e2d9 (size before relaxing)
- .debug_str     0x00000000000b1b13      0x33a Output/scr_nrf Debug/Obj/ble_advertising.o
+ .debug_str     0x00000000000b1cc0      0x33a Output/scr_nrf Debug/Obj/ble_advertising.o
                                       0x9263d (size before relaxing)
- .debug_str     0x00000000000b1e4d      0x2e1 Output/scr_nrf Debug/Obj/ble_conn_params.o
+ .debug_str     0x00000000000b1ffa      0x2e1 Output/scr_nrf Debug/Obj/ble_conn_params.o
                                       0x90889 (size before relaxing)
- .debug_str     0x00000000000b212e      0x85f Output/scr_nrf Debug/Obj/ble_conn_state.o
+ .debug_str     0x00000000000b22db      0x85f Output/scr_nrf Debug/Obj/ble_conn_state.o
                                       0x90630 (size before relaxing)
- .debug_str     0x00000000000b298d       0x8b Output/scr_nrf Debug/Obj/ble_link_ctx_manager.o
+ .debug_str     0x00000000000b2b3a       0x8b Output/scr_nrf Debug/Obj/ble_link_ctx_manager.o
                                       0x8c87a (size before relaxing)
- .debug_str     0x00000000000b2a18      0x22f Output/scr_nrf Debug/Obj/ble_srv_common.o
+ .debug_str     0x00000000000b2bc5      0x22f Output/scr_nrf Debug/Obj/ble_srv_common.o
                                       0x851f1 (size before relaxing)
- .debug_str     0x00000000000b2c47      0x854 Output/scr_nrf Debug/Obj/gatt_cache_manager.o
+ .debug_str     0x00000000000b2df4      0x854 Output/scr_nrf Debug/Obj/gatt_cache_manager.o
                                       0x94a7d (size before relaxing)
- .debug_str     0x00000000000b349b      0x346 Output/scr_nrf Debug/Obj/gatts_cache_manager.o
+ .debug_str     0x00000000000b3648      0x346 Output/scr_nrf Debug/Obj/gatts_cache_manager.o
                                       0x9360c (size before relaxing)
- .debug_str     0x00000000000b37e1      0x4b2 Output/scr_nrf Debug/Obj/id_manager.o
+ .debug_str     0x00000000000b398e      0x4b2 Output/scr_nrf Debug/Obj/id_manager.o
                                       0x94724 (size before relaxing)
- .debug_str     0x00000000000b3c93      0x2b1 Output/scr_nrf Debug/Obj/nrf_ble_gatt.o
+ .debug_str     0x00000000000b3e40      0x2b1 Output/scr_nrf Debug/Obj/nrf_ble_gatt.o
                                       0x905eb (size before relaxing)
- .debug_str     0x00000000000b3f44      0x1bc Output/scr_nrf Debug/Obj/nrf_ble_qwr.o
+ .debug_str     0x00000000000b40f1      0x1bc Output/scr_nrf Debug/Obj/nrf_ble_qwr.o
                                       0x8ecd2 (size before relaxing)
- .debug_str     0x00000000000b4100      0x4b7 Output/scr_nrf Debug/Obj/peer_data_storage.o
+ .debug_str     0x00000000000b42ad      0x4b7 Output/scr_nrf Debug/Obj/peer_data_storage.o
                                       0x9397b (size before relaxing)
- .debug_str     0x00000000000b45b7      0x5e4 Output/scr_nrf Debug/Obj/peer_database.o
+ .debug_str     0x00000000000b4764      0x5e4 Output/scr_nrf Debug/Obj/peer_database.o
                                       0x93a6f (size before relaxing)
- .debug_str     0x00000000000b4b9b      0x11d Output/scr_nrf Debug/Obj/peer_id.o
+ .debug_str     0x00000000000b4d48      0x11d Output/scr_nrf Debug/Obj/peer_id.o
                                       0x8ea96 (size before relaxing)
- .debug_str     0x00000000000b4cb8      0x6ca Output/scr_nrf Debug/Obj/peer_manager.o
+ .debug_str     0x00000000000b4e65      0x6ca Output/scr_nrf Debug/Obj/peer_manager.o
                                       0x94dc7 (size before relaxing)
- .debug_str     0x00000000000b5382      0x371 Output/scr_nrf Debug/Obj/peer_manager_handler.o
+ .debug_str     0x00000000000b552f      0x371 Output/scr_nrf Debug/Obj/peer_manager_handler.o
                                       0x944d6 (size before relaxing)
- .debug_str     0x00000000000b56f3      0x17e Output/scr_nrf Debug/Obj/pm_buffer.o
+ .debug_str     0x00000000000b58a0      0x17e Output/scr_nrf Debug/Obj/pm_buffer.o
                                       0x853f9 (size before relaxing)
- .debug_str     0x00000000000b5871      0x3c6 Output/scr_nrf Debug/Obj/security_dispatcher.o
+ .debug_str     0x00000000000b5a1e      0x3c6 Output/scr_nrf Debug/Obj/security_dispatcher.o
                                       0x94965 (size before relaxing)
- .debug_str     0x00000000000b5c37      0x430 Output/scr_nrf Debug/Obj/security_manager.o
+ .debug_str     0x00000000000b5de4      0x430 Output/scr_nrf Debug/Obj/security_manager.o
                                       0x9469c (size before relaxing)
- .debug_str     0x00000000000b6067      0x1dd Output/scr_nrf Debug/Obj/ble_bas.o
+ .debug_str     0x00000000000b6214      0x1dd Output/scr_nrf Debug/Obj/ble_bas.o
                                       0x91ac0 (size before relaxing)
- .debug_str     0x00000000000b6244      0x18b Output/scr_nrf Debug/Obj/ble_dis.o
+ .debug_str     0x00000000000b63f1      0x18b Output/scr_nrf Debug/Obj/ble_dis.o
                                       0x8e251 (size before relaxing)
- .debug_str     0x00000000000b63cf      0x69d Output/scr_nrf Debug/Obj/ble_hids.o
+ .debug_str     0x00000000000b657c      0x69d Output/scr_nrf Debug/Obj/ble_hids.o
                                       0x90a86 (size before relaxing)
- .debug_str     0x00000000000b6a6c      0x3d7 Output/scr_nrf Debug/Obj/nrf_sdh.o
+ .debug_str     0x00000000000b6c19      0x3d7 Output/scr_nrf Debug/Obj/nrf_sdh.o
                                       0x8b2c4 (size before relaxing)
- .debug_str     0x00000000000b6e43      0x3db Output/scr_nrf Debug/Obj/nrf_sdh_ble.o
+ .debug_str     0x00000000000b6ff0      0x3db Output/scr_nrf Debug/Obj/nrf_sdh_ble.o
                                       0x90f76 (size before relaxing)
- .debug_str     0x00000000000b721e      0x188 Output/scr_nrf Debug/Obj/nrf_sdh_soc.o
+ .debug_str     0x00000000000b73cb      0x188 Output/scr_nrf Debug/Obj/nrf_sdh_soc.o
                                       0x89c64 (size before relaxing)
 
 .debug_ranges   0x0000000000000000     0xb4a8

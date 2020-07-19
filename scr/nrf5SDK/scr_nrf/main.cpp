@@ -94,7 +94,7 @@
 #include "peripherals/button/LatchingButton.h"
 #include "peripherals/battery/battery_adc.h"
 
-#define DEVICE_NAME "CRAP v2"                   /**< Name of device. Will be included in the advertising data. */
+#define DEVICE_NAME "CRAP v3"                   /**< Name of device. Will be included in the advertising data. */
 #define MANUFACTURER_NAME "NordicSemiconductor" /**< Manufacturer. Will be passed to Device Information Service. */
 
 #define APP_BLE_OBSERVER_PRIO 3 /**< Application's BLE observer priority. You shouldn't need to modify this value. */
@@ -1151,7 +1151,7 @@ void wdt_event_handler(void) {
  */
 int main(void) {
   ret_code_t err_code;
-  SPITrackball *trackball = new SPITrackball(SPI_SS);
+  SPITrackball *trackball = new SPITrackball(SPI_CS);
   bool erase_bonds = false;
 
   // Initialize.
@@ -1166,9 +1166,11 @@ int main(void) {
   APP_ERROR_CHECK(err_code);
   nrfx_wdt_enable();
 
+#ifdef UART_GND
   //Pin 3 used as a GND for a pin 2 logging UART
-  nrf_gpio_cfg_output(3);
-  nrf_gpio_pin_clear(3);
+  nrf_gpio_cfg_output(UART_GND);
+  nrf_gpio_pin_clear(UART_GND);
+#endif
 
   nrf_gpio_cfg_output(LED_1);
   nrf_gpio_pin_set(LED_1);
@@ -1191,9 +1193,9 @@ int main(void) {
   advertising_start(erase_bonds);
 
   trackball->initialize();
-  LatchingButton *left = new LatchingButton(31);
+  LatchingButton *left = new LatchingButton(BUTTON_1);
 
-  LatchingButton *right = new LatchingButton(29);
+  LatchingButton *right = new LatchingButton(BUTTON_2);
 
   // Enter main loop.
   while (true) {

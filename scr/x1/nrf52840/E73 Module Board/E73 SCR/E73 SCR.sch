@@ -14,7 +14,7 @@ Comment3 ""
 Comment4 ""
 $EndDescr
 $Comp
-L BVH_nrf52modules:E73-2G4M08S1C-52840 U3
+L BVH_NRF52_Modules:E73-2G4M08S1C-52840 U3
 U 1 1 5CB695CE
 P 5700 2250
 F 0 "U3" H 5700 1050 50  0000 C CNN
@@ -57,7 +57,6 @@ F 3 "" H 5350 850 50  0001 C CNN
 $EndComp
 Wire Wire Line
 	5350 1100 5350 850 
-Connection ~ 5350 1100
 $Comp
 L Connector:USB_B_Micro J1
 U 1 1 5CB69CBE
