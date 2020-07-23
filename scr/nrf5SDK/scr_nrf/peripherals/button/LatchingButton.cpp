@@ -30,17 +30,19 @@ static void gpiote_event(nrfx_gpiote_pin_t pin, nrf_gpiote_polarity_t action) {
   }
 }
 
-LatchingButton::LatchingButton(uint32_t pin, uint32_t latchMs) {
+LatchingButton::LatchingButton(uint32_t pin, uint32_t latchMs, TIME_PROVIDER timeProvider) {
   _isLatched = false;
   _clickedMs = 0;
 
   this->_pin = pin;
   this->_latchMs = latchMs;
+  this->_timeProvider = timeProvider;
 
   this->registerConfiguration = nrf_gpio_pin_port_decode(&(this->_pin));
 
   this->pinValue = 0;
   this->_isDirty = false;
+  this->_debounceValue = 555;
 
   ITEMS[pin] = this;
 
@@ -65,9 +67,42 @@ LatchingButton::LatchingButton(uint32_t pin, uint32_t latchMs) {
 }
 
 void LatchingButton::onChange(uint32_t isClicked) {
+  uint32_t now = _timeProvider();
+
+  if(isClicked == _debounceValue) {
+    return;
+  }
+
+  _debounceValue = isClicked;
+
+  NRF_LOG_INFO("onChange - %d - %d - %d", isClicked, _isLatched, now);
+
+  if(_isLatched) {
+    if(isClicked) {
+      NRF_LOG_INFO("Latch released - %d", now);
+      _isLatched = false;
+    }
+  } else {
+    //We're not currently latched but we're going unclicked, check the time since click
+    if(!isClicked) {
+      if(now - _clickedMs > _latchMs) {
+        NRF_LOG_INFO("Latch set - %d", now - _clickedMs);
+        _isLatched = true;
+      }
+    }
+  }
+
   if(pinValue != isClicked) {
     pinValue = isClicked;
     this->_isDirty = true;
+
+    NRF_LOG_INFO("Button clicked: %d", now);
+
+    if(pinValue) {
+      _clickedMs = now;
+    } else {
+      _clickedMs = 0;
+    }
   }
 }
 

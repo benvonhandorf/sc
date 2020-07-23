@@ -1185,7 +1185,7 @@ int main(void) {
   conn_params_init();
   peer_manager_init();
 
-  batteryAdc = new BatteryAdc(NRF_SAADC_INPUT_AIN4, battery_level_update);
+  batteryAdc = new BatteryAdc(BATTERY_ADC_CHANNEL, battery_level_update);
 
   // Start execution.
   NRF_LOG_INFO("Initialization complete.");
@@ -1193,9 +1193,9 @@ int main(void) {
   advertising_start(erase_bonds);
 
   trackball->initialize();
-  LatchingButton *left = new LatchingButton(BUTTON_1);
+  LatchingButton *left = new LatchingButton(BUTTON_1, get_timer_compensated);
 
-  LatchingButton *right = new LatchingButton(BUTTON_2);
+  LatchingButton *right = new LatchingButton(BUTTON_2, get_timer_compensated);
 
   // Enter main loop.
   while (true) {

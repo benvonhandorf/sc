@@ -6328,7 +6328,7 @@
 // <i> Setting ID to 0 disables the string.
 //==========================================================
 #ifndef APP_USBD_STRING_ID_PRODUCT
-#define APP_USBD_STRING_ID_PRODUCT 2
+#define APP_USBD_STRING_ID_PRODUCTa
 #endif
 // <q> APP_USBD_STRINGS_PRODUCT_EXTERN  - Define whether @ref APP_USBD_STRINGS_PRODUCT is created by macro or declared as a global variable.
  
@@ -7526,6 +7526,7 @@
 
 // <o> NRF_LOG_BACKEND_UART_TX_PIN - UART TX pin 
 #ifndef NRF_LOG_BACKEND_UART_TX_PIN
+//Redefined in custom_board.h for board specific variants
 #define NRF_LOG_BACKEND_UART_TX_PIN 2
 #endif
 

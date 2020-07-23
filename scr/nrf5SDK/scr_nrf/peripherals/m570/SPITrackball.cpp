@@ -62,13 +62,14 @@ bool SPITrackball::initialize() {
   NRF_LOG_INFO("Initialize 1 - %u", csPin);
   NRF_LOG_FLUSH();
 
-  nrfx_spim_xfer_desc_t xfer_desc = NRFX_SPIM_XFER_TRX(transmitBuffer, sizeof(transmitBuffer), receiveBuffer, sizeof(receiveBuffer));
+  nrf_gpio_cfg_output(this->csPin);
+  nrf_gpio_pin_set(this->csPin);
 
   nrfx_spim_config_t spi_config = NRFX_SPIM_DEFAULT_CONFIG;
   spi_config.frequency      = NRF_SPIM_FREQ_125K;
   spi_config.ss_pin         = this->csPin;
-  spi_config.miso_pin       = SPI_COPI;
-  spi_config.mosi_pin       = SPI_CIPO;
+  spi_config.miso_pin       = SPI_CIPO;
+  spi_config.mosi_pin       = SPI_COPI;
   spi_config.sck_pin        = SPI_SCK;
   spi_config.use_hw_ss      = false;
   spi_config.ss_active_high = false;
@@ -78,6 +79,9 @@ bool SPITrackball::initialize() {
   responseAction = 1;
 
   //Initialization phase 1
+
+  nrfx_spim_xfer_desc_t xfer_desc = NRFX_SPIM_XFER_TRX(transmitBuffer, sizeof(transmitBuffer), receiveBuffer, sizeof(receiveBuffer));
+
   transferBuffer(initialize_cmd_1, sizeof(initialize_cmd_1));
 
   xDelta = 0;
@@ -89,14 +93,16 @@ bool SPITrackball::initialize() {
 void SPITrackball::initializePhase1Response() {
   if(!validateResponse(initialize_response_1, sizeof(initialize_response_1))) {
     NRF_LOG_INFO("Initialize cmd 1 returned unexpected data");
-    NRF_LOG_INFO("Expected vs Got");
+    NRF_LOG_INFO("Expected:");
     printBuffer(initialize_response_1, sizeof(initialize_response_1));
+    NRF_LOG_INFO("Got");
     printBuffer(receiveBuffer, sizeof(initialize_response_1));
 
-    if(isNullResponse(sizeof(initialize_response_1))) {
+//    if(isNullResponse(sizeof(initialize_response_1))) {
       initialized = false;
+      responseAction = 0;
       return;
-    }
+//    }
   }
 
   NRF_LOG_INFO("Initialize 2");
@@ -131,14 +137,12 @@ void SPITrackball::pollPhase1Response(){
     NRF_LOG_INFO("Poll cmd 1 returned unexpected data");
     printBuffer(this->receiveBuffer, sizeof(poll_response_1));
 
-    if(isNullResponse(sizeof(poll_response_1))) {
-      this->yDelta = (int8_t) 0;
-      this->xDelta = (int8_t) 0;
+    this->yDelta = (int8_t) 0;
+    this->xDelta = (int8_t) 0;
 
-      responseAction = 0;
+    responseAction = 0;
 
-      return;
-    }
+    return;
   }
 
   responseAction = 11;

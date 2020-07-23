@@ -46,7 +46,7 @@ extern "C" {
 
 #include "nrf_gpio.h"
 
-#define SCR_BOARD_VERSION 2
+#define SCR_BOARD_VERSION 1
 
 #if SCR_BOARD_VERSION == 1
 
@@ -88,10 +88,12 @@ extern "C" {
 #define UART_GND  J6_6
 #define UART_TX_PIN_NUMBER  J6_5
 
+#define SPI_CS    J5_3
 #define SPI_COPI  J5_4
 #define SPI_CIPO  J5_5
 #define SPI_SCK   J5_6
-#define SPI_CS    J5_3
+
+#define BATTERY_ADC_CHANNEL NRF_SAADC_INPUT_AIN4
 
 #elif SCR_BOARD_VERSION==2
 
@@ -147,14 +149,21 @@ extern "C" {
 #define UART_GND  J4_6
 #define UART_TX_PIN_NUMBER  J4_5
 
+#define SPI_CS    J3_3
 #define SPI_COPI  J3_4
 #define SPI_CIPO  J3_5
 #define SPI_SCK   J3_6
-#define SPI_CS    J3_3
+
+#define BATTERY_ADC_CHANNEL NRF_SAADC_INPUT_AIN0
 
 #define SPEAKER   NRF_GPIO_PIN_MAP(0,24)
 
 #endif
+
+#ifdef NRF_LOG_BACKEND_UART_TX_PIN
+#undef NRF_LOG_BACKEND_UART_TX_PIN
+#define NRF_LOG_BACKEND_UART_TX_PIN UART_TX_PIN_NUMBER
+#endif 
 
 #ifdef __cplusplus
 }
