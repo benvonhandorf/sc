@@ -11,6 +11,7 @@ public:
   LatchingButton(uint32_t pin, TIME_PROVIDER timeProvider) : LatchingButton(pin, DEFAULT_LATCH_MS, timeProvider) {} ;
   LatchingButton(uint32_t pin, uint32_t latchMs, TIME_PROVIDER timeProvider);
 
+  bool rawValue();
   bool isPressed();
   bool isDirty();
 

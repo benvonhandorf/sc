@@ -89,6 +89,7 @@
 #include "nrf_log_default_backends.h"
 #include "nrfx_gpiote.h"
 #include <nrfx_wdt.h>
+#include "nrf_delay.h"
 
 #include "peripherals/m570/SPITrackball.h"
 #include "peripherals/button/LatchingButton.h"
@@ -845,6 +846,8 @@ static void ble_evt_handler(ble_evt_t const *p_ble_evt, void *p_context) {
     APP_ERROR_CHECK(err_code);
 
     nrf_gpio_pin_clear(LED_1);
+
+    nrf_gpio_pin_clear(LED_G);
     break;
 
   case BLE_GAP_EVT_DISCONNECTED:
@@ -1146,13 +1149,13 @@ void wdt_event_handler(void) {
   NRF_LOG_FLUSH();
 }
 
-
 /**@brief Function for application main entry.
  */
 int main(void) {
   ret_code_t err_code;
-  SPITrackball *trackball = new SPITrackball(SPI_CS);
   bool erase_bonds = false;
+
+  nrf_delay_ms(2000);
 
   // Initialize.
   log_init();
@@ -1172,8 +1175,31 @@ int main(void) {
   nrf_gpio_pin_clear(UART_GND);
 #endif
 
+  LatchingButton *left = new LatchingButton(BUTTON_2, get_timer_compensated);
+
+  LatchingButton *right = new LatchingButton(BUTTON_1, get_timer_compensated);
+
+
+  if(left->rawValue() && right->rawValue()) {
+    NRF_LOG_INFO("Buttons clicked on boot - erasing bonds");
+    erase_bonds = true;
+  }
+
   nrf_gpio_cfg_output(LED_1);
   nrf_gpio_pin_set(LED_1);
+
+  nrf_gpio_cfg_output(LED_R);
+  nrf_gpio_pin_set(LED_R);
+
+  nrf_gpio_cfg_output(LED_G);
+  nrf_gpio_pin_set(LED_G);
+
+  nrf_gpio_cfg_output(LED_B);
+  nrf_gpio_pin_set(LED_B);
+
+  nrf_gpio_pin_clear(LED_R);
+
+  SPITrackball *trackball = new SPITrackball(SPI_CS);
 
   power_management_init();
   ble_stack_init();
@@ -1193,18 +1219,20 @@ int main(void) {
   advertising_start(erase_bonds);
 
   trackball->initialize();
-  LatchingButton *left = new LatchingButton(BUTTON_1, get_timer_compensated);
-
-  LatchingButton *right = new LatchingButton(BUTTON_2, get_timer_compensated);
 
   // Enter main loop.
   while (true) {
+    nrfx_wdt_feed();
+
     if (trackball->transferInProcess()) {
       app_sched_execute();
+      nrf_gpio_pin_clear(LED_G);
     } else {
-      nrfx_wdt_feed();
+      nrf_gpio_pin_set(LED_G);
 
       if (trackball->pollResults()) {
+        nrf_gpio_pin_set(LED_B);
+
         int8_t deltaX = trackball->getX();
         int8_t deltaY = trackball->getY();
         
@@ -1230,15 +1258,19 @@ int main(void) {
             
             mouse_button_send(leftButtonValue, 0, rightButtonValue);
 
-            NRF_LOG_INFO("Button send: %d:%d - %d, %d", leftButtonValue, rightButtonValue, leftDirty, rightDirty);
+            //NRF_LOG_INFO("Button send: %d:%d - %d, %d", leftButtonValue, rightButtonValue, leftDirty, rightDirty);
           }
 
           if (deltaX != 0 || deltaY != 0) {
             mouse_movement_send(deltaX, deltaY);
 
-            NRF_LOG_INFO("Movement send: %d, %d", deltaX, deltaY);
+            //NRF_LOG_INFO("Movement send: %d, %d", deltaX, deltaY);
 
             trackball->poll();
+
+            nrf_gpio_pin_clear(LED_R);
+          } else {
+            nrf_gpio_pin_set(LED_R);
           }
         }
 
@@ -1253,6 +1285,7 @@ int main(void) {
 
       } else {
         trackball->poll();
+        nrf_gpio_pin_clear(LED_B);
       }
 
       app_sched_execute();

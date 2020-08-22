@@ -49,6 +49,7 @@ SPITrackball::SPITrackball(uint8_t csPin) {
   this->csPin = csPin;
 
   initialized = false;
+  spimInitialized = false;
   instance = this;
 }
 
@@ -62,19 +63,28 @@ bool SPITrackball::initialize() {
   NRF_LOG_INFO("Initialize 1 - %u", csPin);
   NRF_LOG_FLUSH();
 
-  nrf_gpio_cfg_output(this->csPin);
-  nrf_gpio_pin_set(this->csPin);
+  if(!spimInitialized) {
+    nrf_gpio_cfg_output(csPin);
 
-  nrfx_spim_config_t spi_config = NRFX_SPIM_DEFAULT_CONFIG;
-  spi_config.frequency      = NRF_SPIM_FREQ_125K;
-  spi_config.ss_pin         = this->csPin;
-  spi_config.miso_pin       = SPI_CIPO;
-  spi_config.mosi_pin       = SPI_COPI;
-  spi_config.sck_pin        = SPI_SCK;
-  spi_config.use_hw_ss      = false;
-  spi_config.ss_active_high = false;
-  nrfx_err_t retval = nrfx_spim_init(&spi, &spi_config, spim_event_handler, NULL);
-  APP_ERROR_CHECK(retval);
+    nrf_delay_ms(50);
+    
+    nrf_gpio_pin_set(csPin);
+
+    nrf_delay_ms(50);
+
+    nrfx_spim_config_t spi_config = NRFX_SPIM_DEFAULT_CONFIG;
+    spi_config.frequency      = NRF_SPIM_FREQ_125K;
+    spi_config.ss_pin         = csPin;
+    spi_config.miso_pin       = SPI_CIPO;
+    spi_config.mosi_pin       = SPI_COPI;
+    spi_config.sck_pin        = SPI_SCK;
+    spi_config.use_hw_ss      = true;
+    spi_config.ss_active_high = false;
+    nrfx_err_t retval = nrfx_spim_init(&spi, &spi_config, spim_event_handler, NULL);
+    APP_ERROR_CHECK(retval);
+
+    spimInitialized = true;
+  }
 
   responseAction = 1;
 
@@ -98,11 +108,15 @@ void SPITrackball::initializePhase1Response() {
     NRF_LOG_INFO("Got");
     printBuffer(receiveBuffer, sizeof(initialize_response_1));
 
-//    if(isNullResponse(sizeof(initialize_response_1))) {
+    if(isNullResponse(sizeof(initialize_response_1))) {
+      NRF_LOG_INFO("Null response");
+
       initialized = false;
+
       responseAction = 0;
+      
       return;
-//    }
+    }
   }
 
   NRF_LOG_INFO("Initialize 2");
@@ -121,6 +135,7 @@ void SPITrackball::initializePhase2Response(){
 
     if(isNullResponse(sizeof(initialize_response_2))) {
       initialized = false;
+
       return;
     }
   }

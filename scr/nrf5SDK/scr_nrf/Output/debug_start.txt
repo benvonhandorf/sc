@@ -1,0 +1,3 @@
+target extended-remote blackmagic01:2022
+monitor swdp_scan
+att 1

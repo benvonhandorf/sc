@@ -46,7 +46,7 @@ extern "C" {
 
 #include "nrf_gpio.h"
 
-#define SCR_BOARD_VERSION 1
+#define SCR_BOARD_VERSION 2
 
 #if SCR_BOARD_VERSION == 1
 

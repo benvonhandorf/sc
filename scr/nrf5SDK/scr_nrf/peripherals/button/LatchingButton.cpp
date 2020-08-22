@@ -106,6 +106,12 @@ void LatchingButton::onChange(uint32_t isClicked) {
   }
 }
 
+bool LatchingButton::rawValue() {
+  bool value = !nrf_gpio_pin_read(_pin);
+
+  return value;
+}
+
 bool LatchingButton::isPressed() {
   this->_isDirty = false;
 

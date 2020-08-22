@@ -26,6 +26,7 @@ public:
 
 private:
   bool initialized;
+  bool spimInitialized;
   uint8_t pollInProcess;
   uint8_t csPin;
 

@@ -118,6 +118,10 @@
           <file file_name="peripherals/battery/battery_adc.h" />
           <file file_name="peripherals/battery/battery_adc.cpp" />
         </folder>
+        <folder Name="indication">
+          <file file_name="peripherals/indication/status_indicator.cpp" />
+          <file file_name="peripherals/indication/status_indicator.h" />
+        </folder>
       </folder>
       <file file_name="config/sdk_config.h" />
     </folder>

@@ -2680,62 +2680,62 @@
 // <e> NRFX_PWM_ENABLED - nrfx_pwm - PWM peripheral driver
 //==========================================================
 #ifndef NRFX_PWM_ENABLED
-#define NRFX_PWM_ENABLED 0
+#define NRFX_PWM_ENABLED 1
 #endif
 // <q> NRFX_PWM0_ENABLED  - Enable PWM0 instance
  
 
 #ifndef NRFX_PWM0_ENABLED
-#define NRFX_PWM0_ENABLED 0
+#define NRFX_PWM0_ENABLED 1
 #endif
 
 // <q> NRFX_PWM1_ENABLED  - Enable PWM1 instance
  
 
 #ifndef NRFX_PWM1_ENABLED
-#define NRFX_PWM1_ENABLED 0
+#define NRFX_PWM1_ENABLED 1
 #endif
 
 // <q> NRFX_PWM2_ENABLED  - Enable PWM2 instance
  
 
 #ifndef NRFX_PWM2_ENABLED
-#define NRFX_PWM2_ENABLED 0
+#define NRFX_PWM2_ENABLED 1
 #endif
 
 // <q> NRFX_PWM3_ENABLED  - Enable PWM3 instance
  
 
 #ifndef NRFX_PWM3_ENABLED
-#define NRFX_PWM3_ENABLED 0
+#define NRFX_PWM3_ENABLED 1
 #endif
 
 // <o> NRFX_PWM_DEFAULT_CONFIG_OUT0_PIN - Out0 pin  <0-31> 
 
 
 #ifndef NRFX_PWM_DEFAULT_CONFIG_OUT0_PIN
-#define NRFX_PWM_DEFAULT_CONFIG_OUT0_PIN 31
+#define NRFX_PWM_DEFAULT_CONFIG_OUT0_PIN LED_R
 #endif
 
 // <o> NRFX_PWM_DEFAULT_CONFIG_OUT1_PIN - Out1 pin  <0-31> 
 
 
 #ifndef NRFX_PWM_DEFAULT_CONFIG_OUT1_PIN
-#define NRFX_PWM_DEFAULT_CONFIG_OUT1_PIN 31
+#define NRFX_PWM_DEFAULT_CONFIG_OUT1_PIN LED_G
 #endif
 
 // <o> NRFX_PWM_DEFAULT_CONFIG_OUT2_PIN - Out2 pin  <0-31> 
 
 
 #ifndef NRFX_PWM_DEFAULT_CONFIG_OUT2_PIN
-#define NRFX_PWM_DEFAULT_CONFIG_OUT2_PIN 31
+#define NRFX_PWM_DEFAULT_CONFIG_OUT2_PIN LED_B
 #endif
 
 // <o> NRFX_PWM_DEFAULT_CONFIG_OUT3_PIN - Out3 pin  <0-31> 
 
 
 #ifndef NRFX_PWM_DEFAULT_CONFIG_OUT3_PIN
-#define NRFX_PWM_DEFAULT_CONFIG_OUT3_PIN 31
+#define NRFX_PWM_DEFAULT_CONFIG_OUT3_PIN SPEAKER
 #endif
 
 // <o> NRFX_PWM_DEFAULT_CONFIG_BASE_CLOCK  - Base clock
@@ -2750,7 +2750,7 @@
 // <7=> 125 kHz 
 
 #ifndef NRFX_PWM_DEFAULT_CONFIG_BASE_CLOCK
-#define NRFX_PWM_DEFAULT_CONFIG_BASE_CLOCK 4
+#define NRFX_PWM_DEFAULT_CONFIG_BASE_CLOCK 7
 #endif
 
 // <o> NRFX_PWM_DEFAULT_CONFIG_COUNT_MODE  - Count mode
@@ -4905,132 +4905,6 @@
 #define PPI_ENABLED 0
 #endif
 
-// <e> PWM_ENABLED - nrf_drv_pwm - PWM peripheral driver - legacy layer
-//==========================================================
-#ifndef PWM_ENABLED
-#define PWM_ENABLED 0
-#endif
-// <o> PWM_DEFAULT_CONFIG_OUT0_PIN - Out0 pin  <0-31> 
-
-
-#ifndef PWM_DEFAULT_CONFIG_OUT0_PIN
-#define PWM_DEFAULT_CONFIG_OUT0_PIN 31
-#endif
-
-// <o> PWM_DEFAULT_CONFIG_OUT1_PIN - Out1 pin  <0-31> 
-
-
-#ifndef PWM_DEFAULT_CONFIG_OUT1_PIN
-#define PWM_DEFAULT_CONFIG_OUT1_PIN 31
-#endif
-
-// <o> PWM_DEFAULT_CONFIG_OUT2_PIN - Out2 pin  <0-31> 
-
-
-#ifndef PWM_DEFAULT_CONFIG_OUT2_PIN
-#define PWM_DEFAULT_CONFIG_OUT2_PIN 31
-#endif
-
-// <o> PWM_DEFAULT_CONFIG_OUT3_PIN - Out3 pin  <0-31> 
-
-
-#ifndef PWM_DEFAULT_CONFIG_OUT3_PIN
-#define PWM_DEFAULT_CONFIG_OUT3_PIN 31
-#endif
-
-// <o> PWM_DEFAULT_CONFIG_BASE_CLOCK  - Base clock
- 
-// <0=> 16 MHz 
-// <1=> 8 MHz 
-// <2=> 4 MHz 
-// <3=> 2 MHz 
-// <4=> 1 MHz 
-// <5=> 500 kHz 
-// <6=> 250 kHz 
-// <7=> 125 kHz 
-
-#ifndef PWM_DEFAULT_CONFIG_BASE_CLOCK
-#define PWM_DEFAULT_CONFIG_BASE_CLOCK 4
-#endif
-
-// <o> PWM_DEFAULT_CONFIG_COUNT_MODE  - Count mode
- 
-// <0=> Up 
-// <1=> Up and Down 
-
-#ifndef PWM_DEFAULT_CONFIG_COUNT_MODE
-#define PWM_DEFAULT_CONFIG_COUNT_MODE 0
-#endif
-
-// <o> PWM_DEFAULT_CONFIG_TOP_VALUE - Top value 
-#ifndef PWM_DEFAULT_CONFIG_TOP_VALUE
-#define PWM_DEFAULT_CONFIG_TOP_VALUE 1000
-#endif
-
-// <o> PWM_DEFAULT_CONFIG_LOAD_MODE  - Load mode
- 
-// <0=> Common 
-// <1=> Grouped 
-// <2=> Individual 
-// <3=> Waveform 
-
-#ifndef PWM_DEFAULT_CONFIG_LOAD_MODE
-#define PWM_DEFAULT_CONFIG_LOAD_MODE 0
-#endif
-
-// <o> PWM_DEFAULT_CONFIG_STEP_MODE  - Step mode
- 
-// <0=> Auto 
-// <1=> Triggered 
-
-#ifndef PWM_DEFAULT_CONFIG_STEP_MODE
-#define PWM_DEFAULT_CONFIG_STEP_MODE 0
-#endif
-
-// <o> PWM_DEFAULT_CONFIG_IRQ_PRIORITY  - Interrupt priority
- 
-
-// <i> Priorities 0,2 (nRF51) and 0,1,4,5 (nRF52) are reserved for SoftDevice
-// <0=> 0 (highest) 
-// <1=> 1 
-// <2=> 2 
-// <3=> 3 
-// <4=> 4 
-// <5=> 5 
-// <6=> 6 
-// <7=> 7 
-
-#ifndef PWM_DEFAULT_CONFIG_IRQ_PRIORITY
-#define PWM_DEFAULT_CONFIG_IRQ_PRIORITY 6
-#endif
-
-// <q> PWM0_ENABLED  - Enable PWM0 instance
- 
-
-#ifndef PWM0_ENABLED
-#define PWM0_ENABLED 0
-#endif
-
-// <q> PWM1_ENABLED  - Enable PWM1 instance
- 
-
-#ifndef PWM1_ENABLED
-#define PWM1_ENABLED 0
-#endif
-
-// <q> PWM2_ENABLED  - Enable PWM2 instance
- 
-
-#ifndef PWM2_ENABLED
-#define PWM2_ENABLED 0
-#endif
-
-// <q> PWM3_ENABLED  - Enable PWM3 instance
- 
-
-#ifndef PWM3_ENABLED
-#define PWM3_ENABLED 0
-#endif
 
 // </e>
 
@@ -7527,7 +7401,7 @@
 // <o> NRF_LOG_BACKEND_UART_TX_PIN - UART TX pin 
 #ifndef NRF_LOG_BACKEND_UART_TX_PIN
 //Redefined in custom_board.h for board specific variants
-#define NRF_LOG_BACKEND_UART_TX_PIN 2
+#define NRF_LOG_BACKEND_UART_TX_PIN 22
 #endif
 
 // <o> NRF_LOG_BACKEND_UART_BAUDRATE  - Default Baudrate
