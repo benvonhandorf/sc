@@ -15,5 +15,5 @@ public:
   void initializationComplete();
 
 private:
-
+  bool latch_set = false;
 };
