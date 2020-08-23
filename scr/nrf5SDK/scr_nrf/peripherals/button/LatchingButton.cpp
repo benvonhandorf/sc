@@ -79,7 +79,7 @@ void LatchingButton::onChange(uint32_t isClicked) {
 
   if(_isLatched) {
     if(isClicked) {
-      NRF_LOG_INFO("Latch released - %d", now);
+      NRF_LOG_INFO("Latch cleared - %d", now);
       _isLatched = false;
     }
   } else {
@@ -94,7 +94,7 @@ void LatchingButton::onChange(uint32_t isClicked) {
 
   if(pinValue != isClicked) {
     pinValue = isClicked;
-    this->_isDirty = true;
+    _isDirty = true;
 
     NRF_LOG_INFO("Button clicked: %d", now);
 
@@ -120,4 +120,8 @@ bool LatchingButton::isPressed() {
 
 bool LatchingButton::isDirty() {
   return _isDirty;
+}
+
+bool LatchingButton::isLatched() {
+  return _isLatched;
 }

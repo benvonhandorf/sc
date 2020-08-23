@@ -94,6 +94,7 @@
 #include "peripherals/m570/SPITrackball.h"
 #include "peripherals/button/LatchingButton.h"
 #include "peripherals/battery/battery_adc.h"
+#include "peripherals/indication/status_indicator.h"
 
 #define DEVICE_NAME "CRAP v3"                   /**< Name of device. Will be included in the advertising data. */
 #define MANUFACTURER_NAME "NordicSemiconductor" /**< Manufacturer. Will be passed to Device Information Service. */
@@ -164,6 +165,8 @@
 
 #define APP_ADV_FAST_DURATION 3000  /**< The advertising duration of fast advertising in units of 10 milliseconds. */
 #define APP_ADV_SLOW_DURATION 18000 /**< The advertising duration of slow advertising in units of 10 milliseconds. */
+
+static StatusIndicator statusIndicator;
 
 APP_TIMER_DEF(m_battery_timer_id); /**< Battery timer. */
 BLE_BAS_DEF(m_bas);                /**< Battery service instance. */
@@ -845,9 +848,8 @@ static void ble_evt_handler(ble_evt_t const *p_ble_evt, void *p_context) {
     err_code = nrf_ble_qwr_conn_handle_assign(&m_qwr, m_conn_handle);
     APP_ERROR_CHECK(err_code);
 
-    nrf_gpio_pin_clear(LED_1);
+    statusIndicator.bindingComplete();
 
-    nrf_gpio_pin_clear(LED_G);
     break;
 
   case BLE_GAP_EVT_DISCONNECTED:
@@ -855,6 +857,8 @@ static void ble_evt_handler(ble_evt_t const *p_ble_evt, void *p_context) {
     // LED indication will be changed when advertising starts.
 
     m_conn_handle = BLE_CONN_HANDLE_INVALID;
+
+    statusIndicator.advertisingStarted();
     break;
 
   case BLE_GAP_EVT_PHY_UPDATE_REQUEST: {
@@ -952,6 +956,8 @@ static void advertising_init(void) {
   ret_code_t err_code;
   uint8_t adv_flags;
   ble_advertising_init_t init;
+
+  statusIndicator.advertisingStarted();
 
   memset(&init, 0, sizeof(init));
 
@@ -1155,11 +1161,13 @@ int main(void) {
   ret_code_t err_code;
   bool erase_bonds = false;
 
-  nrf_delay_ms(2000);
-
   // Initialize.
   log_init();
   timers_init();
+
+  nrf_delay_ms(2000);
+
+  statusIndicator.initialize();
 
   //Configure WDT.
   nrfx_wdt_config_t config = NRFX_WDT_DEAFULT_CONFIG;
@@ -1184,20 +1192,6 @@ int main(void) {
     NRF_LOG_INFO("Buttons clicked on boot - erasing bonds");
     erase_bonds = true;
   }
-
-  nrf_gpio_cfg_output(LED_1);
-  nrf_gpio_pin_set(LED_1);
-
-  nrf_gpio_cfg_output(LED_R);
-  nrf_gpio_pin_set(LED_R);
-
-  nrf_gpio_cfg_output(LED_G);
-  nrf_gpio_pin_set(LED_G);
-
-  nrf_gpio_cfg_output(LED_B);
-  nrf_gpio_pin_set(LED_B);
-
-  nrf_gpio_pin_clear(LED_R);
 
   SPITrackball *trackball = new SPITrackball(SPI_CS);
 
@@ -1224,15 +1218,14 @@ int main(void) {
   while (true) {
     nrfx_wdt_feed();
 
+    if(!trackball->isInitialized()) {
+      statusIndicator.initializationComplete();
+    }
+
     if (trackball->transferInProcess()) {
       app_sched_execute();
-      nrf_gpio_pin_clear(LED_G);
     } else {
-      nrf_gpio_pin_set(LED_G);
-
       if (trackball->pollResults()) {
-        nrf_gpio_pin_set(LED_B);
-
         int8_t deltaX = trackball->getX();
         int8_t deltaY = trackball->getY();
         
@@ -1259,6 +1252,12 @@ int main(void) {
             mouse_button_send(leftButtonValue, 0, rightButtonValue);
 
             //NRF_LOG_INFO("Button send: %d:%d - %d, %d", leftButtonValue, rightButtonValue, leftDirty, rightDirty);
+
+            if(left->isLatched() || right->isLatched()) {
+              statusIndicator.latchSet();
+            } else {
+              statusIndicator.latchCleared();
+            }
           }
 
           if (deltaX != 0 || deltaY != 0) {
@@ -1267,10 +1266,6 @@ int main(void) {
             //NRF_LOG_INFO("Movement send: %d, %d", deltaX, deltaY);
 
             trackball->poll();
-
-            nrf_gpio_pin_clear(LED_R);
-          } else {
-            nrf_gpio_pin_set(LED_R);
           }
         }
 
@@ -1285,7 +1280,6 @@ int main(void) {
 
       } else {
         trackball->poll();
-        nrf_gpio_pin_clear(LED_B);
       }
 
       app_sched_execute();

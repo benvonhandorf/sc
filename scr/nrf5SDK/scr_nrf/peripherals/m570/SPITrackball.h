@@ -24,6 +24,8 @@ public:
   void pollPhase1Response();
   void pollPhase2Response();
 
+  bool isInitialized();
+
 private:
   bool initialized;
   bool spimInitialized;

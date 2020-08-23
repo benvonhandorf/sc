@@ -96,6 +96,7 @@
       </file>
       <file file_name="../../../../../tools/nrf/nRF5SDK160098a08e2/modules/nrfx/drivers/src/nrfx_wdt.c" />
       <file file_name="../../../../../tools/nrf/nRF5SDK160098a08e2/modules/nrfx/drivers/src/nrfx_saadc.c" />
+      <file file_name="../../../../../tools/nrf/nRF5SDK160098a08e2/modules/nrfx/drivers/src/nrfx_pwm.c" />
     </folder>
     <folder Name="Board Support">
       <file file_name="$(NRF_SDK)/components/libraries/bsp/bsp.c" />
@@ -178,5 +179,6 @@
     Name="Debug"
     c_preprocessor_definitions="DEBUG; DEBUG_NRF"
     gcc_optimization_level="None" />
-  <import file_name="../../../../../tools/nrf/nRF5SDK160098a08e2/examples/peripheral/saadc/pca10040e/blank/ses/saadc_pca10040e.emProject" />
+  <import file_name="../../../../../tools/nrf/nRF5SDK160098a08e2/examples/peripheral/pwm_driver/pca10040/blank/ses/pwm_driver_pca10040.emProject" />
+  <import file_name="../../../../../tools/nrf/nRF5SDK160098a08e2/examples/peripheral/pwm_library/pca10056/blank/ses/pwm_library_pca10056.emProject" />
 </solution>

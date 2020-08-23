@@ -57,6 +57,10 @@ bool SPITrackball::transferInProcess() {
   return responseAction != 0;
 }
 
+bool SPITrackball::isInitialized() {
+  return initialized;
+}
+
 bool SPITrackball::initialize() {
   initialized = false;
 

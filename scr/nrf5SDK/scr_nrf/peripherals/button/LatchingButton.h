@@ -14,6 +14,7 @@ public:
   bool rawValue();
   bool isPressed();
   bool isDirty();
+  bool isLatched();
 
   void onChange(uint32_t isClicked);
 
