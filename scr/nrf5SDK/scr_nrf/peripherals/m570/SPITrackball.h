@@ -3,28 +3,30 @@
 #ifndef SPI_TRACKBALL_H_
 #define SPI_TRACKBALL_H_
 
-class SPITrackball {
+#include "../pointer/pointer.h"
+
+class SPITrackball : public Pointer {
 public:
   SPITrackball(uint8_t csPin);
 
-  bool transferInProcess();
+  bool isBusy();
 
-  bool initialize();
+  bool Initialize();
+  bool isInitialized();
 
-  bool poll();
-  bool pollResults();
+  bool Poll();
+  bool hasData();
 
   int8_t getX();
   int8_t getY();
 
+//Implementation items that need to be public
   uint8_t responseAction;
 
   void initializePhase1Response();
   void initializePhase2Response();
   void pollPhase1Response();
   void pollPhase2Response();
-
-  bool isInitialized();
 
 private:
   bool initialized;

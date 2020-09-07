@@ -53,7 +53,7 @@ SPITrackball::SPITrackball(uint8_t csPin) {
   instance = this;
 }
 
-bool SPITrackball::transferInProcess() {
+bool SPITrackball::isBusy() {
   return responseAction != 0;
 }
 
@@ -61,7 +61,7 @@ bool SPITrackball::isInitialized() {
   return initialized;
 }
 
-bool SPITrackball::initialize() {
+bool SPITrackball::Initialize() {
   initialized = false;
 
   NRF_LOG_INFO("Initialize 1 - %u", csPin);
@@ -188,7 +188,7 @@ void SPITrackball::pollPhase2Response(){
   pollInProcess = false;
 }
 
-bool SPITrackball::poll() {
+bool SPITrackball::Poll() {
   if(!initialized) {
     return false;
   }
@@ -201,7 +201,7 @@ bool SPITrackball::poll() {
   return true;
 }
 
-bool SPITrackball::pollResults() {
+bool SPITrackball::hasData() {
   return !pollInProcess;
 }
 

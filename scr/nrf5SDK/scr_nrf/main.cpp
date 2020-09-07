@@ -91,13 +91,13 @@
 #include <nrfx_wdt.h>
 #include "nrf_delay.h"
 
-#include "peripherals/m570/SPITrackball.h"
+#include "peripherals/pimoroni_trackball/pimoroni_trackball.h"
 #include "peripherals/button/LatchingButton.h"
 #include "peripherals/battery/battery_adc.h"
 #include "peripherals/indication/status_indicator.h"
 
 #define DEVICE_NAME "CRAP v3"                   /**< Name of device. Will be included in the advertising data. */
-#define MANUFACTURER_NAME "NordicSemiconductor" /**< Manufacturer. Will be passed to Device Information Service. */
+#define MANUFACTURER_NAME "BVH-AB4EN" /**< Manufacturer. Will be passed to Device Information Service. */
 
 #define APP_BLE_OBSERVER_PRIO 3 /**< Application's BLE observer priority. You shouldn't need to modify this value. */
 #define APP_BLE_CONN_CFG_TAG 1  /**< A tag identifying the SoftDevice BLE configuration. */
@@ -366,11 +366,11 @@ static void battery_level_meas_timeout_handler(void *p_context) {
   }
 }
 
-static void poll_from_idle_handler(void *p_context) {
-  SPITrackball *trackball = (SPITrackball *) p_context;
-
-  trackball->poll();
-}
+//static void poll_from_idle_handler(void *p_context) {
+//  SPITrackball *trackball = (SPITrackball *) p_context;
+//
+//  trackball->Poll();
+//}
 
 /**@brief Function for the Timer initialization.
  *
@@ -388,10 +388,10 @@ static void timers_init(void) {
       battery_level_meas_timeout_handler);
   APP_ERROR_CHECK(err_code);
 
-    err_code = app_timer_create(&m_poll_timer,
-      APP_TIMER_MODE_SINGLE_SHOT,
-      poll_from_idle_handler);
-  APP_ERROR_CHECK(err_code);
+//    err_code = app_timer_create(&m_poll_timer,
+//      APP_TIMER_MODE_SINGLE_SHOT,
+//      poll_from_idle_handler);
+//  APP_ERROR_CHECK(err_code);
 }
 
 /**@brief Function for the GAP initialization.
@@ -1193,7 +1193,7 @@ int main(void) {
     erase_bonds = true;
   }
 
-  SPITrackball *trackball = new SPITrackball(SPI_CS);
+  Pointer *trackball = new PimoroniTrackball(TWI_SCL, TWI_SDA, TRACKBALL_INTERRUPT);
 
   power_management_init();
   ble_stack_init();
@@ -1212,7 +1212,7 @@ int main(void) {
   timers_start();
   advertising_start(erase_bonds);
 
-  trackball->initialize();
+  trackball->Initialize();
 
   // Enter main loop.
   while (true) {
@@ -1223,10 +1223,10 @@ int main(void) {
     } else {
     }
 
-    if (trackball->transferInProcess()) {
+    if (trackball->isBusy()) {
       app_sched_execute();
     } else {
-      if (trackball->pollResults()) {
+      if (trackball->hasData()) {
         int8_t deltaX = trackball->getX();
         int8_t deltaY = trackball->getY();
         
@@ -1243,7 +1243,7 @@ int main(void) {
 
             NRF_LOG_INFO("Boot mode send: %d, %d - %d:%d", deltaX, deltaY, leftButtonValue, rightButtonValue);
 
-            trackball->poll();
+            trackball->Poll();
           }
         } else {
           if(buttonsDirty) {
@@ -1266,7 +1266,7 @@ int main(void) {
 
             //NRF_LOG_INFO("Movement send: %d, %d", deltaX, deltaY);
 
-            trackball->poll();
+            trackball->Poll();
           }
         }
 
@@ -1280,9 +1280,9 @@ int main(void) {
         }
 
       } else {
-        if(!trackball->poll()) {
+        if(!trackball->Poll()) {
           statusIndicator.initializationStarted();
-          trackball->initialize();
+          trackball->Initialize();
         }
       }
 

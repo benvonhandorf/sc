@@ -154,6 +154,10 @@ extern "C" {
 #define SPI_CIPO  J3_5
 #define SPI_SCK   J3_6
 
+#define TWI_SCL   J3_3
+#define TWI_SDA   J3_4
+#define TRACKBALL_INTERRUPT   J3_4
+
 #define BATTERY_ADC_CHANNEL NRF_SAADC_INPUT_AIN0
 
 #define SPEAKER   NRF_GPIO_PIN_MAP(0,24)
