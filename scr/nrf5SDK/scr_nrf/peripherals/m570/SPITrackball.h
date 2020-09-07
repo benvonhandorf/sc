@@ -45,6 +45,8 @@ private:
   bool isNullResponse(uint8_t length);
 
   void printBuffer(const uint8_t *data, uint8_t length);
+
+  uint8_t errorCount = 0;
 };
 
 #endif

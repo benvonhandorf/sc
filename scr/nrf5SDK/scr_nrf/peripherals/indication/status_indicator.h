@@ -12,6 +12,7 @@ public:
   void advertisingStarted();
   void bindingComplete();
 
+  void initializationStarted();
   void initializationComplete();
 
 private:

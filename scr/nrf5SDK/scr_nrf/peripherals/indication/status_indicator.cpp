@@ -114,7 +114,7 @@ void StatusIndicator::initialize() {
   downward_clip_sequence.length = CLIP_STEP_COUNT;
   downward_clip_sequence.end_delay = 0;
 
-  nrfx_pwm_simple_playback(&pwmB, &fade_sequence, 1, NRFX_PWM_FLAG_LOOP );
+  initializationStarted();
 }
 
 void StatusIndicator::latchSet() {
@@ -138,6 +138,10 @@ void StatusIndicator::advertisingStarted() {
 
 void StatusIndicator::bindingComplete() {
   nrfx_pwm_stop(&pwmG, false);
+}
+
+void StatusIndicator::initializationStarted() {
+  nrfx_pwm_simple_playback(&pwmB, &fade_sequence, 1, NRFX_PWM_FLAG_LOOP );
 }
 
 void StatusIndicator::initializationComplete() {

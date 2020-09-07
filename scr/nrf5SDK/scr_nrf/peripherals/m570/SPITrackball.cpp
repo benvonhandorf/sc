@@ -156,12 +156,24 @@ void SPITrackball::pollPhase1Response(){
     NRF_LOG_INFO("Poll cmd 1 returned unexpected data");
     printBuffer(this->receiveBuffer, sizeof(poll_response_1));
 
+    if(isNullResponse(sizeof(poll_response_1))) {
+      errorCount++;
+
+      if(errorCount >=255) {
+        NRF_LOG_INFO("Trackball not responding.  De-initializing driver");
+
+        initialized = false;
+      }
+    }
+
     this->yDelta = (int8_t) 0;
     this->xDelta = (int8_t) 0;
 
     responseAction = 0;
 
     return;
+  } else {
+    errorCount = 0;
   }
 
   responseAction = 11;

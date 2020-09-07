@@ -1220,6 +1220,7 @@ int main(void) {
 
     if(!trackball->isInitialized()) {
       statusIndicator.initializationComplete();
+    } else {
     }
 
     if (trackball->transferInProcess()) {
@@ -1279,7 +1280,10 @@ int main(void) {
         }
 
       } else {
-        trackball->poll();
+        if(!trackball->poll()) {
+          statusIndicator.initializationStarted();
+          trackball->initialize();
+        }
       }
 
       app_sched_execute();
