@@ -67,7 +67,6 @@
 #include "ble_hci.h"
 #include "ble_hids.h"
 #include "ble_srv_common.h"
-//#include "bsp_btn_ble.h"
 #include "fds.h"
 #include "nordic_common.h"
 #include "nrf.h"
@@ -555,7 +554,7 @@ static void hids_init(void) {
           0x16, 0x01, 0xF8, // Logical maximum (2047)
           0x26, 0xFF, 0x07, // Logical minimum (-2047)
           0x81, 0x06,       // Input (Data, Variable, Relative)
-          0xC0,             // End Collection (Physical)
+          0xC0,             // End Collection (Physical)ƒ
           0xC0,             // End Collection (Application)
 
           // Report ID 3: Advanced buttons
@@ -1085,6 +1084,8 @@ static void mouse_button_send( uint8_t leftClick, uint8_t middleClick, uint8_t r
         rightClick << 1 |
         middleClick << 2;
 
+  NRF_LOG_INFO("Button Send %x", buttons);
+
   err_code = ble_hids_inp_rep_send(&m_hids,
       INPUT_REP_BUTTONS_INDEX,
       1,
@@ -1096,7 +1097,8 @@ static void mouse_button_send( uint8_t leftClick, uint8_t middleClick, uint8_t r
       (err_code != NRF_ERROR_RESOURCES) &&
       (err_code != NRF_ERROR_BUSY) &&
       (err_code != BLE_ERROR_GATTS_SYS_ATTR_MISSING) &&
-      (err_code != NRF_ERROR_FORBIDDEN)) {
+      (err_code != NRF_ERROR_FORBIDDEN)
+      ) {
     APP_ERROR_HANDLER(err_code);
   }
 }
@@ -1208,7 +1210,7 @@ int main(void) {
   batteryAdc = new BatteryAdc(BATTERY_ADC_CHANNEL, battery_level_update);
 
   // Start execution.
-  NRF_LOG_INFO("Initialization complete.");
+  NRF_LOG_INFO("Board bring-up complete.");
   timers_start();
   advertising_start(erase_bonds);
 
@@ -1226,14 +1228,15 @@ int main(void) {
     if (trackball->isBusy()) {
       app_sched_execute();
     } else {
-      if (trackball->hasData()) {
+      bool leftDirty = left->isDirty();
+      bool rightDirty = right->isDirty();
+
+      bool buttonsDirty = leftDirty || rightDirty ;
+
+      if (trackball->hasData() || buttonsDirty) {
         int8_t deltaX = trackball->getX();
         int8_t deltaY = trackball->getY();
         
-        bool leftDirty = left->isDirty();
-        bool rightDirty = right->isDirty();
-        bool buttonsDirty = leftDirty || rightDirty ;
-
         if(m_in_boot_mode) {
           if (deltaX != 0 || deltaY != 0 || buttonsDirty) {
             uint8_t leftButtonValue = left->isPressed();
@@ -1246,13 +1249,16 @@ int main(void) {
             trackball->Poll();
           }
         } else {
+
+          NRF_LOG_INFO("State: %d, %d, %d", buttonsDirty, deltaX, deltaY);
+
           if(buttonsDirty) {
             uint8_t leftButtonValue = left->isPressed();
             uint8_t rightButtonValue = right->isPressed();
+
+            NRF_LOG_INFO("Buttons dirty: %d, %d", leftButtonValue, rightButtonValue);
             
             mouse_button_send(leftButtonValue, 0, rightButtonValue);
-
-            //NRF_LOG_INFO("Button send: %d:%d - %d, %d", leftButtonValue, rightButtonValue, leftDirty, rightDirty);
 
             if(left->isLatched() || right->isLatched()) {
               statusIndicator.latchSet();
@@ -1263,8 +1269,6 @@ int main(void) {
 
           if (deltaX != 0 || deltaY != 0) {
             mouse_movement_send(deltaX, deltaY);
-
-            //NRF_LOG_INFO("Movement send: %d, %d", deltaX, deltaY);
 
             trackball->Poll();
           }

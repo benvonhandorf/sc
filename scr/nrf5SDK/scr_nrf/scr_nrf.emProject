@@ -189,5 +189,4 @@
     Name="Debug"
     c_preprocessor_definitions="DEBUG; DEBUG_NRF"
     gcc_optimization_level="None" />
-  <import file_name="../../../../../tools/nrf/nRF5SDK160098a08e2/examples/peripheral/twi_sensor/pca10056/blank/ses/twi_sensor_pca10056.emProject" />
 </solution>

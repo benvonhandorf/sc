@@ -75,8 +75,6 @@ void LatchingButton::onChange(uint32_t isClicked) {
 
   _debounceValue = isClicked;
 
-  NRF_LOG_INFO("onChange - %d - %d - %d", isClicked, _isLatched, now);
-
   if(_isLatched) {
     if(isClicked) {
       NRF_LOG_INFO("Latch cleared - %d", now);
@@ -104,6 +102,8 @@ void LatchingButton::onChange(uint32_t isClicked) {
       _clickedMs = 0;
     }
   }
+
+  NRF_LOG_INFO("onChange - %d - %d - %d - %d", isClicked, _isLatched, now, _isDirty);
 }
 
 bool LatchingButton::rawValue() {
