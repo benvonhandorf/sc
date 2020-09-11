@@ -6,6 +6,7 @@
 #include <nrfx_gpiote.h>
 #include "pimoroni_trackball.h"
 #include "nrf_log.h"
+#include <stdlib.h>
 
 //Based on reverse engineering https://github.com/pimoroni/trackball-python/blob/master/library/trackball/__init__.py
 
@@ -139,6 +140,19 @@ void PimoroniTrackball::ArmInterrupt() {
   Transfer(1, 1);
 }
 
+#define MIN(a, b) (a > b ? b : a)
+
+int8_t readingScale[] = {1, 6, 12, 32, 64, 120};
+
+int8_t scaleReading(int8_t reading) {
+  if(reading == 0) {
+    return 0;
+  }
+  int8_t idx = MIN(abs(reading), 6) - 1;
+
+  return readingScale[idx] * (reading > 0 ? 1 : -1);
+}
+
 void PimoroniTrackball::ProcessResults() {
   switch(buf_out_[0]) {
     case REG_INT: {
@@ -190,8 +204,9 @@ void PimoroniTrackball::ProcessResults() {
 
       //This looks odd because we're transforming from the rotated
       //trackball space
-      x_ = down - up;
-      y_ = left - right;
+
+      x_ = scaleReading(down - up);
+      y_ = scaleReading(left - right);
 
       if(x_ != 0 || y_ != 0) {
         NRF_LOG_INFO("Movement %d, %d", x_, y_);
