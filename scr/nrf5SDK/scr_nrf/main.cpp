@@ -1084,8 +1084,6 @@ static void mouse_button_send( uint8_t leftClick, uint8_t middleClick, uint8_t r
         rightClick << 1 |
         middleClick << 2;
 
-  NRF_LOG_INFO("Button Send %x", buttons);
-
   err_code = ble_hids_inp_rep_send(&m_hids,
       INPUT_REP_BUTTONS_INDEX,
       1,
@@ -1250,7 +1248,7 @@ int main(void) {
           }
         } else {
 
-          NRF_LOG_INFO("State: %d, %d, %d", buttonsDirty, deltaX, deltaY);
+//          NRF_LOG_INFO("State: %d, %d, %d", buttonsDirty, deltaX, deltaY);
 
           if(buttonsDirty) {
             uint8_t leftButtonValue = left->isPressed();

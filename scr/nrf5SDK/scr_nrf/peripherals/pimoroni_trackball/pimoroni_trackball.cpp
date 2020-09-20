@@ -47,6 +47,10 @@ static void ProcessResults(void * p_event_data, uint16_t event_size) {
   instance->ProcessResults();
 }
 
+static void FlushColors(void * p_event_data, uint16_t event_size) {
+  instance->FlushColors();
+}
+
 static void TwimHandler(nrfx_twim_evt_t const *p_event, void *p_context) {
   if(p_event->type == NRFX_TWIM_EVT_DONE) {
     app_sched_event_put(NULL, 0, ProcessResults);
@@ -130,7 +134,31 @@ bool PimoroniTrackball::Poll() {
 
 void PimoroniTrackball::RetrievePosition() {
   buf_out_[0] = REG_LEFT;
+
   Transfer(1, 5);
+}
+
+void PimoroniTrackball::SetColor(uint8_t r, uint8_t g, uint8_t b, uint8_t w) {
+  r_ = r;
+  g_ = g;
+  b_ = b;
+  w_ = w;
+
+//  if(r_ || g_ || b_ || w_) {
+//    NRF_LOG_INFO("Color: %d %d %d %d", r, g, b, w);
+//  }
+
+  app_sched_event_put(NULL, 0, ::FlushColors);
+}
+
+void PimoroniTrackball::FlushColors() {
+  buf_out_[0] = REG_LED_RED;
+  buf_out_[1] = r_;
+  buf_out_[2] = g_;
+  buf_out_[3] = b_;
+  buf_out_[4] = w_;
+
+  Transfer(5, 0);
 }
 
 void PimoroniTrackball::ArmInterrupt() {
@@ -141,16 +169,71 @@ void PimoroniTrackball::ArmInterrupt() {
 }
 
 #define MIN(a, b) (a > b ? b : a)
+#define SIGN(a) (a == 0 ? 0 : a > 0 ? 1 : -1)
 
-int8_t readingScale[] = {1, 6, 12, 32, 64, 120};
+#define ACCELERATION_DELAY 16
+#define DECELERATION_DELAY 50
+int8_t accelerationScale[] = {1, 6, 12, 32, 64, 120};
+uint8_t accelerationColor[] = {0, 64, 128, 172, 192, 255};
 
-int8_t scaleReading(int8_t reading) {
+void PimoroniTrackball::AdjustScaling(int8_t x, int8_t y) {
+  if((SIGN(x) == SIGN(previous_x_)
+    || SIGN(y) == SIGN(previous_y_))
+    && (x != 0 || y != 0)) {
+    
+    //Accel
+    if(acceleration_factor_ < 5) {
+      if(acceleration_delay_ <= 0) {
+        NRF_LOG_INFO("Accel %d", acceleration_factor_);
+
+        acceleration_factor_ = acceleration_factor_ + 1;
+        acceleration_delay_ = ACCELERATION_DELAY;
+      } else {
+        acceleration_delay_--;
+      }
+    }
+  
+    deceleration_delay_ = DECELERATION_DELAY;
+//  } else {
+//    if(SIGN(x) != SIGN(previous_x_)
+//      && SIGN(y) != SIGN(previous_y_)
+//      && (x != 0 || y != 0)) {
+//      //Direction actively chagned
+//      NRF_LOG_INFO("Accel reset");
+//
+//      acceleration_factor_ = 0;
+//      acceleration_delay_ = ACCELERATION_DELAY;
+//      deceleration_delay_ = DECELERATION_DELAY;
+    } else {
+      //Decel
+      NRF_LOG_INFO("NoAccel %d %d %d %d %d", acceleration_factor_, SIGN(x), SIGN(previous_x_), SIGN(y), SIGN(previous_y_));
+
+      if(acceleration_factor_ > 0) {
+
+        if(deceleration_delay_ == 0) {
+          NRF_LOG_INFO("Decel %d %d %d %d %d", acceleration_factor_, SIGN(x), SIGN(previous_x_), SIGN(y), SIGN(previous_y_));
+          acceleration_factor_--;
+          deceleration_delay_ = DECELERATION_DELAY;
+        } else {
+          deceleration_delay_ --;
+        }
+      }
+//    }
+  }
+
+  int8_t idx = MIN(acceleration_factor_, 5);
+
+  SetColor(accelerationColor[idx], 0, 0, 0);
+}
+
+int8_t PimoroniTrackball::ScaleReading(int8_t reading) {
   if(reading == 0) {
     return 0;
   }
-  int8_t idx = MIN(abs(reading), 6) - 1;
 
-  return readingScale[idx] * (reading > 0 ? 1 : -1);
+  int8_t idx = MIN(acceleration_factor_, 5);
+
+  return accelerationScale[idx] * (reading > 0 ? 1 : -1);
 }
 
 void PimoroniTrackball::ProcessResults() {
@@ -205,13 +288,21 @@ void PimoroniTrackball::ProcessResults() {
       //This looks odd because we're transforming from the rotated
       //trackball space
 
-      x_ = scaleReading(down - up);
-      y_ = scaleReading(left - right);
+      int8_t x = down - up;
+      int8_t y = left - right;
 
-      if(x_ != 0 || y_ != 0) {
-        NRF_LOG_INFO("Movement %d, %d", x_, y_);
-      }
+      AdjustScaling(x, y);
 
+      x_ = ScaleReading(x);
+      y_ = ScaleReading(y);
+
+//      if(x_ != 0 || y_ != 0) {
+//        NRF_LOG_INFO("Movement %d, %d", x_, y_);
+//      }
+
+      break;
+    }
+    case REG_LED_RED: {
       break;
     }
     default:
@@ -221,15 +312,23 @@ void PimoroniTrackball::ProcessResults() {
   request_outstanding_ = false;
 }
 
+nrfx_twim_xfer_desc_t xfer;
+
 void PimoroniTrackball::Transfer(uint8_t tx_length, uint8_t rx_length) {
   request_outstanding_ = true;
 
-  const nrfx_twim_xfer_desc_t xfer = NRFX_TWIM_XFER_DESC_TXRX(
-                    I2C_ADDR,
-                    buf_out_,
-                    tx_length,
-                    buf_in_,
-                    rx_length);
+  if(rx_length) {
+    xfer = NRFX_TWIM_XFER_DESC_TXRX(
+    I2C_ADDR,
+    buf_out_,
+    tx_length,
+    buf_in_,
+    rx_length);
+  } else {
+    xfer = NRFX_TWIM_XFER_DESC_TX(I2C_ADDR,
+    buf_out_,
+    tx_length);
+  }
 
   nrfx_twim_xfer(&twim_t_, &xfer, 0);
 }
@@ -242,11 +341,17 @@ bool PimoroniTrackball::hasData() {
 int8_t PimoroniTrackball::getX() {
   int8_t result = x_;
   x_ = 0;
+  if(result != 0) {
+    previous_x_ = result;
+  }
   return result;
 }
 
 int8_t PimoroniTrackball::getY() {
   int8_t result = y_;
   y_ = 0;
+  if(result != 0) {
+    previous_y_ = result;
+  }
   return result;
 }
