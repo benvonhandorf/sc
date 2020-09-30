@@ -171,7 +171,7 @@ void PimoroniTrackball::ArmInterrupt() {
 #define MIN(a, b) (a > b ? b : a)
 #define SIGN(a) (a == 0 ? 0 : a > 0 ? 1 : -1)
 
-#define ACCELERATION_DELAY 16
+#define ACCELERATION_DELAY 12
 #define DECELERATION_DELAY 50
 int8_t accelerationScale[] = {1, 6, 12, 32, 64, 120};
 uint8_t accelerationColor[] = {0, 64, 128, 172, 192, 255};
@@ -206,8 +206,6 @@ void PimoroniTrackball::AdjustScaling(int8_t x, int8_t y) {
 //      deceleration_delay_ = DECELERATION_DELAY;
     } else {
       //Decel
-      NRF_LOG_INFO("NoAccel %d %d %d %d %d", acceleration_factor_, SIGN(x), SIGN(previous_x_), SIGN(y), SIGN(previous_y_));
-
       if(acceleration_factor_ > 0) {
 
         if(deceleration_delay_ == 0) {

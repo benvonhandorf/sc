@@ -1084,6 +1084,8 @@ static void mouse_button_send( uint8_t leftClick, uint8_t middleClick, uint8_t r
         rightClick << 1 |
         middleClick << 2;
 
+  NRF_LOG_INFO("mouse_button_send: %x", buttons);
+
   err_code = ble_hids_inp_rep_send(&m_hids,
       INPUT_REP_BUTTONS_INDEX,
       1,

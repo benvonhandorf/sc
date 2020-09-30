@@ -77,11 +77,13 @@
   <Watches active="0" update="Never"/>
  </Watch4>
  <Files>
-  <SessionOpenFile windowGroup="DockEditLeft" x="0" y="1085" useTextEdit="1" openedFrom="" useBinaryEdit="0" left="0" path="main.cpp" selected="1" top="1067" codecName="Default"/>
-  <SessionOpenFile windowGroup="DockEditLeft" x="17" y="121" useTextEdit="1" openedFrom="" useBinaryEdit="0" left="0" path="peripherals/button/LatchingButton.cpp" selected="0" top="103" codecName="Default"/>
-  <SessionOpenFile windowGroup="DockEditLeft" x="46" y="144" useTextEdit="1" openedFrom="" useBinaryEdit="0" left="0" path="peripherals/pimoroni_trackball/pimoroni_trackball.cpp" selected="0" top="153" codecName="Default"/>
+  <SessionOpenFile windowGroup="DockEditLeft" x="8" y="1090" useTextEdit="1" openedFrom="" useBinaryEdit="0" left="0" path="main.cpp" selected="0" top="1066" codecName="Default"/>
+  <SessionOpenFile windowGroup="DockEditLeft" x="0" y="121" useTextEdit="1" openedFrom="" useBinaryEdit="0" left="0" path="peripherals/button/LatchingButton.cpp" selected="0" top="103" codecName="Default"/>
+  <SessionOpenFile windowGroup="DockEditLeft" x="29" y="173" useTextEdit="1" openedFrom="" useBinaryEdit="0" left="0" path="peripherals/pimoroni_trackball/pimoroni_trackball.cpp" selected="1" top="165" codecName="Default"/>
   <SessionOpenFile windowGroup="DockEditLeft" x="0" y="0" useTextEdit="1" openedFrom="" useBinaryEdit="0" left="0" path="peripherals/indication/status_indicator.h" selected="0" top="0" codecName="Default"/>
   <SessionOpenFile windowGroup="DockEditLeft" x="0" y="0" useTextEdit="1" openedFrom="" useBinaryEdit="0" left="0" path="peripherals/indication/status_indicator.cpp" selected="0" top="0" codecName="Default"/>
+  <SessionOpenFile windowGroup="DockEditLeft" x="34" y="47" useTextEdit="1" openedFrom="" useBinaryEdit="0" left="0" path="peripherals/pimoroni_trackball/pimoroni_trackball.h" selected="0" top="21" codecName="Default"/>
+  <SessionOpenFile windowGroup="DockEditLeft" x="0" y="178" useTextEdit="1" openedFrom="" useBinaryEdit="0" left="0" path="../../../../../tools/nrf/nRF5SDK160098a08e2/modules/nrfx/drivers/include/nrfx_twim.h" selected="0" top="155" codecName="Default"/>
  </Files>
- <ARMCrossStudioWindow activeProject="scr_nrf" fileDialogDefaultFilter="*.c" autoConnectTarget="J-Link" buildConfiguration="Debug" sessionSettings="" debugSearchFileMap="" fileDialogInitialDirectory="/Users/benvh/tools/nrf/nRF5SDK160098a08e2/modules/nrfx/drivers/src" debugSearchPath="" autoConnectCapabilities="3199"/>
+ <ARMCrossStudioWindow activeProject="scr_nrf" fileDialogDefaultFilter="*.c" autoConnectTarget="J-Link" buildConfiguration="Debug" sessionSettings="" debugSearchFileMap="" fileDialogInitialDirectory="/Users/benvh/tools/nrf/nRF5SDK160098a08e2/modules/nrfx/drivers/src" debugSearchPath="" autoConnectCapabilities="3711"/>
 </session>
