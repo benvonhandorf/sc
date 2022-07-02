@@ -2,7 +2,7 @@
 <session>
  <Bookmarks/>
  <Breakpoints groups="Breakpoints" active_group="Breakpoints">
-  <BreakpointListItem trigger="" line="1296" counter="0" hardwareBreakpoint="" isFunctionBreakpoint="false" action="" expression="" group="Breakpoints" type="Breakpoint" state="2" filename="../../../main.c" useHWbreakpoint="false"/>
+  <BreakpointListItem trigger="" line="1296" counter="0" hardwareBreakpoint="" isFunctionBreakpoint="false" action="" expression="" group="Breakpoints" type="Breakpoint" state="4" filename="../../../main.c" useHWbreakpoint="false"/>
  </Breakpoints>
  <ExecutionProfileWindow/>
  <FrameBufferWindow>
@@ -53,7 +53,11 @@
   <Trace enabled="Yes"/>
  </TraceWindow>
  <Watch1>
-  <Watches active="1" update="Never"/>
+  <Watches active="1" update="Never">
+   <Watchpoint expression="this->csPin" name="csPin" radix="-1" linenumber="0" filename=""/>
+   <Watchpoint expression="NUMBER_OF_PINS" name="NUMBER_OF_PINS" radix="-1" linenumber="0" filename=""/>
+   <Watchpoint expression="SPI_SS" name="SPI_SS" radix="16" linenumber="0" filename=""/>
+  </Watches>
  </Watch1>
  <Watch2>
   <Watches active="0" update="Never"/>
@@ -66,23 +70,28 @@
  </Watch4>
  <Files>
   <SessionOpenFile windowGroup="DockEditLeft" x="0" y="18" useTextEdit="1" openedFrom="" useBinaryEdit="0" left="0" path="scr_nrf.emProject" selected="0" top="0" codecName="Default"/>
-  <SessionOpenFile windowGroup="DockEditLeft" x="12" y="24" useTextEdit="1" openedFrom="" useBinaryEdit="0" left="0" path="peripherals/m570/SPITrackball.cpp" selected="1" top="88" codecName="Default"/>
-  <SessionOpenFile windowGroup="DockEditLeft" x="0" y="1206" useTextEdit="1" openedFrom="" useBinaryEdit="0" left="0" path="main.cpp" selected="0" top="1184" codecName="Default"/>
-  <SessionOpenFile windowGroup="DockEditLeft" x="26" y="7772" useTextEdit="1" openedFrom="/Users/benvh/tools/nrf/nRF5SDK160098a08e2/integration/nrfx/nrfx_config.h" useBinaryEdit="0" left="0" path="config/sdk_config.h" selected="0" top="7752" codecName="Default"/>
+  <SessionOpenFile windowGroup="DockEditLeft" x="24" y="152" useTextEdit="1" openedFrom="" useBinaryEdit="0" left="0" path="peripherals/m570/SPITrackball.cpp" selected="0" top="141" codecName="Default"/>
+  <SessionOpenFile windowGroup="DockEditLeft" x="124" y="131" useTextEdit="1" openedFrom="" useBinaryEdit="0" left="46" path="main.cpp" selected="1" top="122" codecName="Default"/>
+  <SessionOpenFile windowGroup="DockEditLeft" x="0" y="7772" useTextEdit="1" openedFrom="/Users/benvh/tools/nrf/nRF5SDK160098a08e2/integration/nrfx/nrfx_config.h" useBinaryEdit="0" left="0" path="config/sdk_config.h" selected="0" top="7752" codecName="Default"/>
   <SessionOpenFile windowGroup="DockEditLeft" x="0" y="43" useTextEdit="1" openedFrom="/Users/benvh/tools/nrf/nRF5SDK160098a08e2/modules/nrfx/drivers/src/nrfx_spim.c" useBinaryEdit="0" left="0" path="../../../../../tools/nrf/nRF5SDK160098a08e2/modules/nrfx/nrfx.h" selected="0" top="29" codecName="Default"/>
   <SessionOpenFile windowGroup="DockEditLeft" x="0" y="44" useTextEdit="1" openedFrom="/Users/benvh/tools/nrf/nRF5SDK160098a08e2/modules/nrfx/nrfx.h" useBinaryEdit="0" left="0" path="../../../../../tools/nrf/nRF5SDK160098a08e2/integration/nrfx/nrfx_config.h" selected="0" top="28" codecName="Default"/>
   <SessionOpenFile windowGroup="DockEditLeft" x="0" y="810" useTextEdit="1" openedFrom="/Users/benvh/tools/nrf/nRF5SDK160098a08e2/modules/nrfx/drivers/src/nrfx_spim.c" useBinaryEdit="0" left="0" path="../../../../../tools/nrf/nRF5SDK160098a08e2/integration/nrfx/legacy/apply_old_config.h" selected="0" top="783" codecName="Default"/>
-  <SessionOpenFile windowGroup="DockEditLeft" x="0" y="32" useTextEdit="1" openedFrom="" useBinaryEdit="0" left="0" path="../../../../../tools/nrf/nRF5SDK160098a08e2/modules/nrfx/drivers/src/nrfx_spim.c" selected="0" top="30" codecName="Default"/>
+  <SessionOpenFile windowGroup="DockEditLeft" x="13" y="423" useTextEdit="1" openedFrom="" useBinaryEdit="0" left="0" path="../../../../../tools/nrf/nRF5SDK160098a08e2/modules/nrfx/drivers/src/nrfx_spim.c" selected="0" top="406" codecName="Default"/>
   <SessionOpenFile windowGroup="DockEditLeft" x="0" y="81" useTextEdit="1" openedFrom="/Users/benvh/tools/nrf/nRF5SDK160098a08e2/components/libraries/log/nrf_log_backend_uart.h" useBinaryEdit="0" left="0" path="../../../../../tools/nrf/nRF5SDK160098a08e2/components/libraries/log/src/nrf_log_backend_uart.c" selected="0" top="67" codecName="Default"/>
   <SessionOpenFile windowGroup="DockEditLeft" x="0" y="66" useTextEdit="1" openedFrom="" useBinaryEdit="0" left="0" path="../../../../../tools/nrf/nRF5SDK160098a08e2/components/libraries/log/nrf_log_backend_uart.h" selected="0" top="53" codecName="Default"/>
-  <SessionOpenFile windowGroup="DockEditLeft" x="40" y="79" useTextEdit="1" openedFrom="/Users/benvh/projects/sc/scr/nrf5SDK/scr_nrf/main.cpp" useBinaryEdit="0" left="0" path="config/custom_board.h" selected="0" top="59" codecName="Default"/>
+  <SessionOpenFile windowGroup="DockEditLeft" x="8" y="81" useTextEdit="1" openedFrom="/Users/benvh/projects/sc/scr/nrf5SDK/scr_nrf/main.cpp" useBinaryEdit="0" left="0" path="config/custom_board.h" selected="0" top="64" codecName="Default"/>
   <SessionOpenFile windowGroup="DockEditLeft" x="0" y="5" useTextEdit="1" openedFrom="" useBinaryEdit="0" left="0" path="peripherals/m570/poll.h" selected="0" top="0" codecName="Default"/>
   <SessionOpenFile windowGroup="DockEditLeft" x="0" y="196" useTextEdit="1" openedFrom="/Users/benvh/projects/sc/scr/nrf5SDK/scr_nrf/main.cpp" useBinaryEdit="0" left="0" path="../../../../../tools/nrf/nRF5SDK160098a08e2/components/libraries/timer/app_timer.h" selected="0" top="190" codecName="Default"/>
-  <SessionOpenFile windowGroup="DockEditLeft" x="0" y="180" useTextEdit="1" openedFrom="/Users/benvh/tools/nrf/nRF5SDK160098a08e2/components/libraries/timer/app_timer.h" useBinaryEdit="0" left="0" path="../../../../../tools/nrf/nRF5SDK160098a08e2/components/libraries/timer/app_timer2.c" selected="0" top="161" codecName="Default"/>
-  <SessionOpenFile windowGroup="DockEditLeft" x="0" y="147" useTextEdit="1" openedFrom="/Users/benvh/projects/sc/scr/nrf5SDK/scr_nrf/peripherals/m570/SPITrackball.cpp" useBinaryEdit="0" left="0" path="../../../../../tools/nrf/nRF5SDK160098a08e2/modules/nrfx/drivers/include/nrfx_spim.h" selected="0" top="122" codecName="Default"/>
+  <SessionOpenFile windowGroup="DockEditLeft" x="0" y="572" useTextEdit="1" openedFrom="/Users/benvh/projects/sc/scr/nrf5SDK/scr_nrf/main.cpp" useBinaryEdit="0" left="0" path="../../../../../tools/nrf/nRF5SDK160098a08e2/components/libraries/timer/app_timer2.c" selected="0" top="556" codecName="Default"/>
+  <SessionOpenFile windowGroup="DockEditLeft" x="12" y="106" useTextEdit="1" openedFrom="/Users/benvh/projects/sc/scr/nrf5SDK/scr_nrf/peripherals/m570/SPITrackball.cpp" useBinaryEdit="0" left="0" path="../../../../../tools/nrf/nRF5SDK160098a08e2/modules/nrfx/drivers/include/nrfx_spim.h" selected="0" top="92" codecName="Default"/>
   <SessionOpenFile windowGroup="DockEditLeft" x="0" y="438" useTextEdit="1" openedFrom="" useBinaryEdit="0" left="0" path="../../../../../tools/nrf/nRF5SDK160098a08e2/components/libraries/pwr_mgmt/nrf_pwr_mgmt.c" selected="0" top="424" codecName="Default"/>
-  <SessionOpenFile windowGroup="DockEditLeft" x="23" y="28" useTextEdit="1" openedFrom="" useBinaryEdit="0" left="0" path="peripherals/m570/SPITrackball.h" selected="0" top="8" codecName="Default"/>
+  <SessionOpenFile windowGroup="DockEditLeft" x="20" y="7" useTextEdit="1" openedFrom="" useBinaryEdit="0" left="0" path="peripherals/m570/SPITrackball.h" selected="0" top="4" codecName="Default"/>
   <SessionOpenFile windowGroup="DockEditLeft" x="0" y="13" useTextEdit="1" openedFrom="" useBinaryEdit="0" left="0" path="peripherals/m570/initialization.h" selected="0" top="0" codecName="Default"/>
+  <SessionOpenFile windowGroup="DockEditLeft" x="32" y="458" useTextEdit="1" openedFrom="/Users/benvh/projects/sc/scr/nrf5SDK/scr_nrf/peripherals/m570/SPITrackball.cpp" useBinaryEdit="0" left="0" path="../../../../../tools/nrf/nRF5SDK160098a08e2/modules/nrfx/hal/nrf_gpio.h" selected="0" top="443" codecName="Default"/>
+  <SessionOpenFile windowGroup="DockEditLeft" x="0" y="525" useTextEdit="1" openedFrom="/Users/benvh/projects/sc/scr/nrf5SDK/scr_nrf/main.cpp" useBinaryEdit="0" left="0" path="../../../../../tools/nrf/nRF5SDK160098a08e2/components/softdevice/s140/headers/nrf_soc.h" selected="0" top="497" codecName="Default"/>
+  <SessionOpenFile windowGroup="DockEditLeft" x="0" y="69" useTextEdit="1" openedFrom="/Users/benvh/projects/sc/scr/nrf5SDK/scr_nrf/main.cpp" useBinaryEdit="0" left="0" path="../../../../../tools/nrf/nRF5SDK160098a08e2/components/softdevice/s140/headers/nrf_error.h" selected="0" top="52" codecName="Default"/>
+  <SessionOpenFile windowGroup="DockEditLeft" x="0" y="118" useTextEdit="1" openedFrom="/Users/benvh/projects/sc/scr/nrf5SDK/scr_nrf/main.cpp" useBinaryEdit="0" left="0" path="../../../../../tools/nrf/nRF5SDK160098a08e2/components/softdevice/s140/headers/ble_gatts.h" selected="0" top="103" codecName="Default"/>
+  <SessionOpenFile windowGroup="DockEditLeft" x="0" y="78" useTextEdit="1" openedFrom="/Users/benvh/tools/nrf/nRF5SDK160098a08e2/components/softdevice/s140/headers/ble_gatts.h" useBinaryEdit="0" left="0" path="../../../../../tools/nrf/nRF5SDK160098a08e2/components/softdevice/s140/headers/ble_err.h" selected="0" top="65" codecName="Default"/>
  </Files>
  <ARMCrossStudioWindow activeProject="scr_nrf" fileDialogDefaultFilter="*.h" autoConnectTarget="J-Link" buildConfiguration="Debug" sessionSettings="" debugSearchFileMap="" fileDialogInitialDirectory="/Users/benvh/projects/sc/scr/nrf5SDK/scr_nrf/config" debugSearchPath="" autoConnectCapabilities="3711"/>
 </session>
