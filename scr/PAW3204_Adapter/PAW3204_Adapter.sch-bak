@@ -14,7 +14,7 @@ Comment3 ""
 Comment4 ""
 $EndDescr
 $Comp
-L BVH_Sensors:PAW3204 U2
+L BVH_Sensors:PAW3204DB U2
 U 1 1 5EF131FB
 P 5850 3600
 F 0 "U2" H 5800 3975 50  0000 C CNN
@@ -156,10 +156,8 @@ Text GLabel 5150 3750 0    50   Input ~ 0
 SCLK
 Text GLabel 9000 1400 0    50   Input ~ 0
 SCLK
-Text GLabel 9000 1500 0    50   Input ~ 0
-RST
 Text GLabel 5150 3450 0    50   Input ~ 0
-RST
+OSC_RES
 Text GLabel 5150 3550 0    50   Input ~ 0
 MOTSWK
 Text GLabel 9000 1600 0    50   Input ~ 0
@@ -212,7 +210,7 @@ U 1 1 5F05D260
 P 5050 5500
 F 0 "JP2" V 5004 5568 50  0000 L CNN
 F 1 "VDDA_GND" V 5095 5568 50  0000 L CNN
-F 2 "" H 5050 5500 50  0001 C CNN
+F 2 "Jumper:SolderJumper-2_P1.3mm_Bridged_RoundedPad1.0x1.5mm" H 5050 5500 50  0001 C CNN
 F 3 "~" H 5050 5500 50  0001 C CNN
 	1    5050 5500
 	0    1    1    0   
@@ -223,7 +221,7 @@ U 1 1 5F05DB12
 P 5800 4950
 F 0 "JP1" H 5800 5155 50  0000 C CNN
 F 1 "VDDA_VDD" H 5800 5064 50  0000 C CNN
-F 2 "" H 5800 4950 50  0001 C CNN
+F 2 "Jumper:SolderJumper-2_P1.3mm_Open_RoundedPad1.0x1.5mm" H 5800 4950 50  0001 C CNN
 F 3 "~" H 5800 4950 50  0001 C CNN
 	1    5800 4950
 	1    0    0    -1  
@@ -246,4 +244,45 @@ Text GLabel 9000 1200 0    50   Input ~ 0
 VDD
 Text Notes 3800 2400 0    50   ~ 0
 Board is NOT 3.3V tolerant.  \nRelies on external voltage supply and level shifting circuitry appropriate for selected operating voltage.  \nAs made, configured for 2.8V, see voltage selection for different options.
+Text Notes 1650 6750 0    50   ~ 0
+Rev 1 of this board had the PAW3204DB-TJ3L pinout with pin 1 as RST.
+NoConn ~ 9000 1500
+$Comp
+L power:GND #PWR?
+U 1 1 5F478AB1
+P 8500 3700
+F 0 "#PWR?" H 8500 3450 50  0001 C CNN
+F 1 "GND" H 8505 3527 50  0000 C CNN
+F 2 "" H 8500 3700 50  0001 C CNN
+F 3 "" H 8500 3700 50  0001 C CNN
+	1    8500 3700
+	1    0    0    -1  
+$EndComp
+Text GLabel 8500 3250 0    50   Input ~ 0
+OSC_RES
+$Comp
+L Device:R R?
+U 1 1 5F47938F
+P 8500 3500
+F 0 "R?" H 8570 3546 50  0000 L CNN
+F 1 "R" H 8570 3455 50  0000 L CNN
+F 2 "Resistors_SMD:R_0805" V 8430 3500 50  0001 C CNN
+F 3 "~" H 8500 3500 50  0001 C CNN
+	1    8500 3500
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	8500 3350 8500 3250
+Wire Wire Line
+	8500 3650 8500 3700
+Text Notes 7700 3700 0    50   ~ 0
+Voltage Depndent:\n34.8K for 2.7V\n26K for 1.8V\n1% resistor
+Wire Notes Line
+	7650 3150 8700 3150
+Wire Notes Line
+	8700 3150 8700 4000
+Wire Notes Line
+	8700 4000 7650 4000
+Wire Notes Line
+	7650 4000 7650 3150
 $EndSCHEMATC
