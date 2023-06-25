@@ -1,0 +1,12 @@
+{
+	"folders": [
+		{
+			"path": "."
+		},
+		{
+			"name": "pio_nrf52840_v1",
+			"path": "scr/x1/pio_nrf52840_v1"
+		}
+	],
+	"settings": {}
+}
